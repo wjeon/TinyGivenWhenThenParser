@@ -14,9 +14,8 @@ namespace TinyGivenWhenThenParser.Tests.Unit
         {
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
-            const string pattern = @"^Given (.*) has (\d+) apple(s|) and (\d+) orange(s|)$";
-
-            var parseResult = gwtParser.WithPattern(pattern).ParseData();
+            var parseResult = gwtParser.WithPattern(@"^Given (.*) has (\d+) apple(s|) and (\d+) orange(s|)$")
+                .ParseSingleLine();
 
             var expectedData = string.IsNullOrEmpty(parsedData) ? new string[0] : parsedData.Split(',');
 
@@ -31,9 +30,8 @@ namespace TinyGivenWhenThenParser.Tests.Unit
         {
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
-            const string pattern = @"When (.*) eats (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)";
-
-            var parseResult = gwtParser.WithPattern(pattern).ParseData();
+            var parseResult = gwtParser.WithPattern(@"When (.*) eats (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)")
+                .ParseSingleLine();
 
             var expectedData = string.IsNullOrEmpty(parsedData) ? new string[0] : parsedData.Split(',');
 
@@ -48,11 +46,46 @@ namespace TinyGivenWhenThenParser.Tests.Unit
         {
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
-            const string pattern = @"^Then (.*) has (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)";
-
-            var parseResult = gwtParser.WithPattern(pattern).ParseData();
+            var parseResult = gwtParser.WithPattern(@"^Then (.*) has (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)")
+                .ParseSingleLine();
 
             var expectedData = string.IsNullOrEmpty(parsedData) ? new string[0] : parsedData.Split(',');
+
+            parseResult.ShouldAllBeEquivalentTo(expectedData);
+        }
+
+        [Test]
+        public void When_test_case_has_multi_lines_ParseSingleLine_method_parses_data_from_the_first_matching_line()
+        {
+            const string multilineCase = @"not matching line
+Given Tom has 3 apples
+Given Jerry has 1 orange";
+            var expectedData = new[] { "Tom", "3", "apple", "s"};
+
+            var gwtParser = TinyGWTParser.WithTestCase(multilineCase);
+
+            var parseResult = gwtParser.WithPattern(@"^Given (.*) has (\d+) (apple|orange)(s|)")
+                .ParseSingleLine();
+
+            parseResult.ShouldAllBeEquivalentTo(expectedData);
+        }
+
+        [Test]
+        public void When_test_case_has_multi_lines_ParseMultiLines_method_parses_data_from_all_matching_lines()
+        {
+            const string multilineCase = @"not matching line
+Given Tom has 3 apples
+Given Jerry has 1 orange";
+            var expectedData = new[]
+                {
+                    new[] { "Tom", "3", "apple", "s" },
+                    new[] { "Jerry", "1", "orange", "" }
+                };
+
+            var gwtParser = TinyGWTParser.WithTestCase(multilineCase);
+
+            var parseResult = gwtParser.WithPattern(@"^Given (.*) has (\d+) (apple|orange)(s|)")
+                .ParseMultiLines();
 
             parseResult.ShouldAllBeEquivalentTo(expectedData);
         }
