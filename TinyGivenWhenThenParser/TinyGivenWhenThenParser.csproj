@@ -39,6 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="From.cs" />
+    <Compile Include="GwtParserException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TinyGWTParser.cs" />
   </ItemGroup>
