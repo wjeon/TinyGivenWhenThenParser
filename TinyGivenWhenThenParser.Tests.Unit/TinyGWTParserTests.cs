@@ -16,7 +16,7 @@ namespace TinyGivenWhenThenParser.Tests.Unit
 
             const string pattern = @"^Given (.*) has (\d+) apple(s|) and (\d+) orange(s|)$";
 
-            var parseResult = gwtParser.WithPattern(pattern).ParseData();
+            var parseResult = gwtParser.WithPattern(pattern).ParseSingleLine();
 
             var expectedData = string.IsNullOrEmpty(parsedData) ? new string[0] : parsedData.Split(',');
 
@@ -33,7 +33,7 @@ namespace TinyGivenWhenThenParser.Tests.Unit
 
             const string pattern = @"When (.*) eats (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)";
 
-            var parseResult = gwtParser.WithPattern(pattern).ParseData();
+            var parseResult = gwtParser.WithPattern(pattern).ParseSingleLine();
 
             var expectedData = string.IsNullOrEmpty(parsedData) ? new string[0] : parsedData.Split(',');
 
@@ -50,7 +50,7 @@ namespace TinyGivenWhenThenParser.Tests.Unit
 
             const string pattern = @"^Then (.*) has (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)";
 
-            var parseResult = gwtParser.WithPattern(pattern).ParseData();
+            var parseResult = gwtParser.WithPattern(pattern).ParseSingleLine();
 
             var expectedData = string.IsNullOrEmpty(parsedData) ? new string[0] : parsedData.Split(',');
 
@@ -58,7 +58,7 @@ namespace TinyGivenWhenThenParser.Tests.Unit
         }
 
         [Test]
-        public void When_test_case_has_multi_lines_parser_parses_data_from_the_first_matching_line()
+        public void When_test_case_has_multi_lines_ParseSingleLine_method_parses_data_from_the_first_matching_line()
         {
             const string multilineCase = @"not matching line
 Given Tom has 3 apples
@@ -69,7 +69,7 @@ Given Jerry has 1 orange";
 
             const string pattern = @"^Given (.*) has (\d+) (apple|orange)(s|)";
 
-            var parseResult = gwtParser.WithPattern(pattern).ParseData();
+            var parseResult = gwtParser.WithPattern(pattern).ParseSingleLine();
 
             parseResult.ShouldAllBeEquivalentTo(expectedData);
         }

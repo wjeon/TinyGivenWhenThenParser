@@ -14,7 +14,7 @@ namespace TinyGivenWhenThenParser
             _testCaseLines = testCase.Split('\r').Select(c => c.Trim());
         }
 
-        public IList<string> ParseData()
+        public IList<string> ParseSingleLine()
         {
             foreach (var line in _testCaseLines)
             {
