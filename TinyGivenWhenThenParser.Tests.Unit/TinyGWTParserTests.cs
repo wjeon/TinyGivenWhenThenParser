@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 
 namespace TinyGivenWhenThenParser.Tests.Unit
@@ -7,9 +6,11 @@ namespace TinyGivenWhenThenParser.Tests.Unit
     [TestFixture]
     public class TinyGWTParserTests
     {
-        [TestCase(@"Given Tom has 2 apples and 3 oranges", "Tom", 2, 3, "s")]
-        [TestCase(@"Given Jerry has 1 apple and 1 orange", "Jerry", 1, 1, "")]
-        public void Parse_data_from_a_sentence_correctly(string @case, string name, int numberOfApples, int numberOfOranges, string ignore)
+        [TestCase(@"Given Tom has 2 apples and 3 oranges", "Tom,2,s,3,s")]
+        [TestCase(@"Given Jerry has 1 apple and 1 orange", "Jerry,1,,1,")]
+        [TestCase(@"When Jerry has 1 apple and 1 orange", "")]
+        public void Parse_data_from_a_sentence_correctly_with_the_pattern_for_Given_when_the_sentence_starts_with_Given
+            (string @case, string parsedData)
         {
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
@@ -17,7 +18,7 @@ namespace TinyGivenWhenThenParser.Tests.Unit
 
             var parseResult = gwtParser.WithPattern(pattern).ParseData();
 
-            var expectedData = new List<string> {name, numberOfApples.ToString(), ignore, numberOfOranges.ToString(), ignore};
+            var expectedData = string.IsNullOrEmpty(parsedData) ? new string[0] : parsedData.Split(',');
 
             parseResult.ShouldAllBeEquivalentTo(expectedData);
         }
