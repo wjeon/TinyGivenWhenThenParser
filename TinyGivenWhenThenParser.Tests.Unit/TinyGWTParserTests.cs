@@ -6,54 +6,57 @@ namespace TinyGivenWhenThenParser.Tests.Unit
     [TestFixture]
     public class TinyGWTParserTests
     {
-        [TestCase(@"Given Tom has 2 apples and 3 oranges", "Tom,2,s,3,s")]
-        [TestCase(@"Given Jerry has 1 apple and 1 orange", "Jerry,1,,1,")]
-        [TestCase(@"When Jerry has 1 apple and 1 orange", "")]
+        [TestCase(@"Given Tom has 2 apples and 3 oranges", true, "Tom,2,s,3,s")]
+        [TestCase(@"Given Jerry has 1 apple and 1 orange", true, "Jerry,1,,1,")]
+        [TestCase(@"When Jerry has 1 apple and 1 orange", false, "")]
         public void Parse_data_from_a_sentence_correctly_with_the_pattern_for_Given_when_the_sentence_starts_with_Given
-            (string @case, string parsedData)
+            (string @case, bool parsed, string parsedData)
         {
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
             var parseResult = gwtParser.WithPattern(@"^Given (.*) has (\d+) apple(s|) and (\d+) orange(s|)$")
                 .ParseSingleLine();
 
-            var expectedData = string.IsNullOrEmpty(parsedData) ? new string[0] : parsedData.Split(',');
+            var expectedResult = new ParseResult<string[]>(parsed,
+                string.IsNullOrEmpty(parsedData) ? new string[0] : parsedData.Split(','));
 
-            parseResult.ShouldAllBeEquivalentTo(expectedData);
+            parseResult.ShouldBeEquivalentTo(expectedResult);
         }
 
-        [TestCase(@"When Tom eats 1 apple and 2 oranges", "Tom,1, apple,, and ,2, orange,s")]
-        [TestCase(@"When Jerry eats 1 orange", "Jerry,,,,,1, orange,")]
-        [TestCase(@"Given Jerry eats 1 orange", "")]
+        [TestCase(@"When Tom eats 1 apple and 2 oranges", true, "Tom,1, apple,, and ,2, orange,s")]
+        [TestCase(@"When Jerry eats 1 orange", true, "Jerry,,,,,1, orange,")]
+        [TestCase(@"Given Jerry eats 1 orange", false, "")]
         public void Parse_data_from_a_sentence_correctly_with_the_pattern_for_When_when_the_sentence_starts_with_When
-            (string @case, string parsedData)
+            (string @case, bool parsed, string parsedData)
         {
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
             var parseResult = gwtParser.WithPattern(@"When (.*) eats (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)")
                 .ParseSingleLine();
 
-            var expectedData = string.IsNullOrEmpty(parsedData) ? new string[0] : parsedData.Split(',');
+            var expectedResult = new ParseResult<string[]>(parsed,
+                string.IsNullOrEmpty(parsedData) ? new string[0] : parsedData.Split(','));
 
-            parseResult.ShouldAllBeEquivalentTo(expectedData);
+            parseResult.ShouldBeEquivalentTo(expectedResult);
         }
 
         [TestCase(@"When ignore this line
-Then Tom has 1 apple and 1 orange", "Tom,1, apple,, and ,1, orange,")]
+Then Tom has 1 apple and 1 orange", true, "Tom,1, apple,, and ,1, orange,")]
         [TestCase(@"When ignore this line
-Then Jerry has 1 apple", "Jerry,1, apple,,,,,")]
-        [TestCase(@"Given Jerry has 1 apple", "")]
+Then Jerry has 1 apple", true, "Jerry,1, apple,,,,,")]
+        [TestCase(@"Given Jerry has 1 apple", false, "")]
         public void Parse_data_from_a_sentence_correctly_with_the_pattern_for_Then_when_the_sentence_starts_with_Then
-            (string @case, string parsedData)
+            (string @case, bool parsed, string parsedData)
         {
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
             var parseResult = gwtParser.WithPattern(@"^Then (.*) has (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)")
                 .ParseSingleLine();
 
-            var expectedData = string.IsNullOrEmpty(parsedData) ? new string[0] : parsedData.Split(',');
+            var expectedResult = new ParseResult<string[]>(parsed,
+                string.IsNullOrEmpty(parsedData) ? new string[0] : parsedData.Split(','));
 
-            parseResult.ShouldAllBeEquivalentTo(expectedData);
+            parseResult.ShouldBeEquivalentTo(expectedResult);
         }
 
         [Test]
@@ -62,14 +65,15 @@ Then Jerry has 1 apple", "Jerry,1, apple,,,,,")]
             const string multilineCase = @"Given not matching line
 Given Tom has 3 apples
 Given Jerry has 1 orange";
-            var expectedData = new[] { "Tom", "3", "apple", "s"};
 
             var gwtParser = TinyGWTParser.WithTestCase(multilineCase);
 
             var parseResult = gwtParser.WithPattern(@"Given (.*) has (\d+) (apple|orange)(s|)")
                 .ParseSingleLine();
 
-            parseResult.ShouldAllBeEquivalentTo(expectedData);
+            var expectedResult = new ParseResult<string[]>(true, new[] { "Tom", "3", "apple", "s" });
+
+            parseResult.ShouldBeEquivalentTo(expectedResult);
         }
 
         [Test]
@@ -78,18 +82,19 @@ Given Jerry has 1 orange";
             const string multilineCase = @"Given not matching line
 Given Tom has 3 apples
 Given Jerry has 1 orange";
-            var expectedData = new[]
-                {
-                    new[] { "Tom", "3", "apple", "s" },
-                    new[] { "Jerry", "1", "orange", "" }
-                };
 
             var gwtParser = TinyGWTParser.WithTestCase(multilineCase);
 
             var parseResult = gwtParser.WithPattern(@"Given (.*) has (\d+) (apple|orange)(s|)")
                 .ParseMultiLines();
 
-            parseResult.ShouldAllBeEquivalentTo(expectedData);
+            var expectedResult = new ParseResult<string[][]>(true, new[]
+                {
+                    new[] { "Tom", "3", "apple", "s" },
+                    new[] { "Jerry", "1", "orange", "" }
+                });
+
+            parseResult.ShouldBeEquivalentTo(expectedResult);
         }
 
         [Test]
@@ -97,18 +102,19 @@ Given Jerry has 1 orange";
         {
             const string multilineCase = @"Given Tom has 2 apples and 3 oranges
 And Jerry has 1 apple and 1 orange";
-            var expectedData = new[]
-                {
-                    new[] { "Tom", "2", "s", "3", "s" },
-                    new[] { "Jerry", "1", "", "1", "" }
-                };
 
             var gwtParser = TinyGWTParser.WithTestCase(multilineCase);
 
             var parseResult = gwtParser.WithPattern(@"Given (.*) has (\d+) apple(s|) and (\d+) orange(s|)")
                 .ParseMultiLines(From.TestCaseReplacedAndWithGivenWhenThen);
 
-            parseResult.ShouldAllBeEquivalentTo(expectedData);
+            var expectedResult = new ParseResult<string[][]>(true, new[]
+                {
+                    new[] { "Tom", "2", "s", "3", "s" },
+                    new[] { "Jerry", "1", "", "1", "" }
+                });
+
+            parseResult.ShouldBeEquivalentTo(expectedResult);
         }
 
         [Test]
@@ -116,18 +122,19 @@ And Jerry has 1 apple and 1 orange";
         {
             const string multilineCase = @"When Tom eats 1 apple and 2 oranges
 And Jerry eats 1 orange";
-            var expectedData = new[]
-                {
-                    new[] { "Tom", "1", " apple", "", " and ", "2", " orange", "s" },
-                    new[] { "Jerry", "", "", "", "","1", " orange", "" }
-                };
 
             var gwtParser = TinyGWTParser.WithTestCase(multilineCase);
 
             var parseResult = gwtParser.WithPattern(@"When (.*) eats (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)")
                 .ParseMultiLines();
 
-            parseResult.ShouldAllBeEquivalentTo(expectedData);
+            var expectedResult = new ParseResult<string[][]>(true, new[]
+                {
+                    new[] { "Tom", "1", " apple", "", " and ", "2", " orange", "s" },
+                    new[] { "Jerry", "", "", "", "","1", " orange", "" }
+                });
+
+            parseResult.ShouldBeEquivalentTo(expectedResult);
         }
 
         [Test]
@@ -136,18 +143,19 @@ And Jerry eats 1 orange";
             const string multilineCase = @"When ignore this line
 Then Tom has 1 apple and 1 orange
 And Jerry has 1 apple";
-            var expectedData = new[]
-                {
-                    new[] { "Tom", "1", " apple", "", " and ", "1", " orange", "" },
-                    new[] { "Jerry", "1", " apple", "", "", "", "", "" }
-                };
 
             var gwtParser = TinyGWTParser.WithTestCase(multilineCase);
 
             var parseResult = gwtParser.WithPattern(@"Then (.*) has (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)")
                 .ParseMultiLines();
 
-            parseResult.ShouldAllBeEquivalentTo(expectedData);
+            var expectedResult = new ParseResult<string[][]>(true, new[]
+                {
+                    new[] { "Tom", "1", " apple", "", " and ", "1", " orange", "" },
+                    new[] { "Jerry", "1", " apple", "", "", "", "", "" }
+                });
+
+            parseResult.ShouldBeEquivalentTo(expectedResult);
         }
 
         [TestCase(@"Given Tom has 2 apples and 3 oranges
@@ -168,12 +176,12 @@ And Jerry has 1 apple", @"And (.*) has (|\d+)( apple|)(s|)(| and )(|\d+)( orange
             var singleLineParseResult = gwtParser.WithPattern(pattern)
                 .ParseSingleLine(From.OriginalTestCase);
 
-            singleLineParseResult.ShouldAllBeEquivalentTo(parsedData.Split(','));
+            singleLineParseResult.ShouldBeEquivalentTo(new ParseResult<string[]>(true, parsedData.Split(',')));
 
             var multiLineParseResult = gwtParser.WithPattern(pattern)
                 .ParseMultiLines(From.OriginalTestCase);
 
-            multiLineParseResult.ShouldAllBeEquivalentTo(new[] { parsedData.Split(',') });
+            multiLineParseResult.ShouldBeEquivalentTo(new ParseResult<string[][]>(true, new[] {parsedData.Split(',')}));
         }
 
         [TestCase(@"Case #1: Given Tom has 2 apples and 3 oranges
