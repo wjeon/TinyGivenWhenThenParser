@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -11,7 +12,8 @@ namespace TinyGivenWhenThenParser
 
         private TinyGWTParser(string testCase)
         {
-            _testCaseLines = testCase.Split('\r').Select(c => c.Trim());
+            _testCaseLines = testCase
+                .Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None).Select(c => c.Trim());
         }
 
         public IList<string> ParseSingleLine()
