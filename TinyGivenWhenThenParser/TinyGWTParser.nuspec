@@ -1,0 +1,17 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>TinyGWTParser</id>
+    <version>0.1.0.0</version>
+    <authors>WJ</authors>
+    <owners>WJ</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Tiny given-when-then parser that parses data from GWT test cases</description>
+    <releaseNotes>Initial release.</releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>Tiny Given When Then Parser Test</tags>
+  </metadata>
+  <files>
+    <file src="bin\TinyGWTParser.dll" target="lib\net45" />
+  </files>
+</package>
