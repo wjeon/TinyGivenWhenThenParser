@@ -186,5 +186,14 @@ And Jerry has 1 apple and 1 orange")]
         {
             Assert.Throws<GwtParserException>(() => TinyGWTParser.WithTestCase(@case));
         }
+
+        [Test]
+        public void When_a_test_case_contains_line_that_begins_with_other_than_And_Given_When_Then_it_throws()
+        {
+            var @case = @"Given Tom has 2 apples and 3 oranges
+Also Jerry has 1 apple and 1 orange";
+
+            Assert.Throws<GwtParserException>(() => TinyGWTParser.WithTestCase(@case));
+        }
     }
 }

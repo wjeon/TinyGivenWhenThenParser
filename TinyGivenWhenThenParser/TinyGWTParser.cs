@@ -83,6 +83,8 @@ namespace TinyGivenWhenThenParser
                 {
                     gwtLines.Add(string.Format("!{0}", line).Replace("!And", prefix));
                 }
+                else
+                    throw new GwtParserException("Each line of the test case must start with 'Given', 'When', 'Then' or 'And'");
             }
             return gwtLines;
         }
