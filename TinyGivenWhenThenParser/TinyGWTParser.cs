@@ -18,21 +18,23 @@ namespace TinyGivenWhenThenParser
             _gwtLines = ToGwtLinesFrom(_testCaseLines);
         }
 
-        public IList<string> ParseSingleLine()
+        public IList<string> ParseSingleLine(From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
         {
-            var result = ParseData(multiLine: false);
+            var result = ParseData(testCase, multiLine: false);
 
             return result.Any() ? result.First() : new List<string>();
         }
 
-        public IEnumerable<IList<string>> ParseMultiLines()
+        public IEnumerable<IList<string>> ParseMultiLines(From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
         {
-            return ParseData(multiLine: true);
+            return ParseData(testCase, multiLine: true);
         }
 
-        private IEnumerable<IList<string>> ParseData(bool multiLine)
+        private IEnumerable<IList<string>> ParseData(From testCase, bool multiLine)
         {
-            foreach (var line in _gwtLines)
+            var lines = testCase == From.OriginalTestCase ? _testCaseLines : _gwtLines;
+
+            foreach (var line in lines)
             {
                 var matchResult = Regex.Match(line, _pattern);
 

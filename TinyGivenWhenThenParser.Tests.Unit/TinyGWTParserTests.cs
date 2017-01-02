@@ -104,7 +104,7 @@ And Jerry has 1 apple and 1 orange";
             var gwtParser = TinyGWTParser.WithTestCase(multilineCase);
 
             var parseResult = gwtParser.WithPattern(@"Given (.*) has (\d+) apple(s|) and (\d+) orange(s|)")
-                .ParseMultiLines();
+                .ParseMultiLines(From.TestCaseReplacedAndWithGivenWhenThen);
 
             parseResult.ShouldAllBeEquivalentTo(expectedData);
         }
@@ -145,6 +145,30 @@ And Jerry has 1 apple";
                 .ParseMultiLines();
 
             parseResult.ShouldAllBeEquivalentTo(expectedData);
+        }
+
+        [TestCase(@"Given Tom has 2 apples and 3 oranges
+And Jerry has 1 apple and 1 orange", @"Given (.*) has (\d+) apple(s|) and (\d+) orange(s|)", "Tom,2,s,3,s")]
+        [TestCase(@"When Tom eats 1 apple and 2 oranges
+And Jerry eats 1 orange", @"When (.*) eats (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)", "Tom,1, apple,, and ,2, orange,s")]
+        [TestCase(@"Then Tom has 1 apple and 1 orange
+And Jerry has 1 apple", @"Then (.*) has (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)", "Tom,1, apple,, and ,1, orange,")]
+        [TestCase(@"Then Tom has 1 apple and 1 orange
+And Jerry has 1 apple", @"And (.*) has (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)", "Jerry,1, apple,,,,,")]
+        public void Leading_And_in_the_line_is_not_replaced_and_the_line_is_matched_with_the_pattern_for_And_when_OriginalTestCase_option_is_selected
+            (string @case, string pattern, string parsedData)
+        {
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var singleLineParseResult = gwtParser.WithPattern(pattern)
+                .ParseSingleLine(From.OriginalTestCase);
+
+            singleLineParseResult.ShouldAllBeEquivalentTo(parsedData.Split(','));
+
+            var multiLineParseResult = gwtParser.WithPattern(pattern)
+                .ParseMultiLines(From.OriginalTestCase);
+
+            multiLineParseResult.ShouldAllBeEquivalentTo(new[] { parsedData.Split(',') });
         }
     }
 }
