@@ -16,6 +16,18 @@ namespace TinyGivenWhenThenParser
 
         public IList<string> ParseSingleLine()
         {
+            var result = ParseData(multiLine: false);
+
+            return result.Any() ? result.First() : new List<string>();
+        }
+
+        public IEnumerable<IList<string>> ParseMultiLines()
+        {
+            return ParseData(multiLine: true);
+        }
+
+        private IEnumerable<IList<string>> ParseData(bool multiLine)
+        {
             foreach (var line in _testCaseLines)
             {
                 var matchResult = Regex.Match(line, _pattern);
@@ -28,9 +40,12 @@ namespace TinyGivenWhenThenParser
                 {
                     result.Add(matchResult.Groups[i].Value);
                 }
-                return result;
+
+                yield return result;
+
+                if (!multiLine)
+                    break;
             }
-            return new List<string>();
         }
 
         public static TinyGWTParser WithTestCase(string testCase)

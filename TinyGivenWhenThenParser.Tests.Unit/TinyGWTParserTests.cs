@@ -69,5 +69,25 @@ Given Jerry has 1 orange";
 
             parseResult.ShouldAllBeEquivalentTo(expectedData);
         }
+
+        [Test]
+        public void When_test_case_has_multi_lines_ParseMultiLines_method_parses_data_from_all_matching_lines()
+        {
+            const string multilineCase = @"not matching line
+Given Tom has 3 apples
+Given Jerry has 1 orange";
+            var expectedData = new[]
+                {
+                    new[] { "Tom", "3", "apple", "s" },
+                    new[] { "Jerry", "1", "orange", "" }
+                };
+
+            var gwtParser = TinyGWTParser.WithTestCase(multilineCase);
+
+            var parseResult = gwtParser.WithPattern(@"^Given (.*) has (\d+) (apple|orange)(s|)")
+                .ParseMultiLines();
+
+            parseResult.ShouldAllBeEquivalentTo(expectedData);
+        }
     }
 }
