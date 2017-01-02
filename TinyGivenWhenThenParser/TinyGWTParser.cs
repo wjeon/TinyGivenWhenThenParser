@@ -13,6 +13,9 @@ namespace TinyGivenWhenThenParser
 
         private TinyGWTParser(string testCase)
         {
+            if (!testCase.StartsWith("Given ") && !testCase.StartsWith("When "))
+                throw new GwtParserException("Test case must start with 'Given' or 'When'");
+
             _testCaseLines = testCase
                 .Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None).Select(c => c.Trim());
             _gwtLines = ToGwtLinesFrom(_testCaseLines);

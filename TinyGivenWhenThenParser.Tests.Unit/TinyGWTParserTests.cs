@@ -38,8 +38,10 @@ namespace TinyGivenWhenThenParser.Tests.Unit
             parseResult.ShouldAllBeEquivalentTo(expectedData);
         }
 
-        [TestCase(@"Then Tom has 1 apple and 1 orange", "Tom,1, apple,, and ,1, orange,")]
-        [TestCase(@"Then Jerry has 1 apple", "Jerry,1, apple,,,,,")]
+        [TestCase(@"When ignore this line
+Then Tom has 1 apple and 1 orange", "Tom,1, apple,, and ,1, orange,")]
+        [TestCase(@"When ignore this line
+Then Jerry has 1 apple", "Jerry,1, apple,,,,,")]
         [TestCase(@"Given Jerry has 1 apple", "")]
         public void Parse_data_from_a_sentence_correctly_with_the_pattern_for_Then_when_the_sentence_starts_with_Then
             (string @case, string parsedData)
@@ -57,7 +59,7 @@ namespace TinyGivenWhenThenParser.Tests.Unit
         [Test]
         public void When_test_case_has_multi_lines_ParseSingleLine_method_parses_data_from_the_first_matching_line()
         {
-            const string multilineCase = @"not matching line
+            const string multilineCase = @"Given not matching line
 Given Tom has 3 apples
 Given Jerry has 1 orange";
             var expectedData = new[] { "Tom", "3", "apple", "s"};
@@ -73,7 +75,7 @@ Given Jerry has 1 orange";
         [Test]
         public void When_test_case_has_multi_lines_ParseMultiLines_method_parses_data_from_all_matching_lines()
         {
-            const string multilineCase = @"not matching line
+            const string multilineCase = @"Given not matching line
 Given Tom has 3 apples
 Given Jerry has 1 orange";
             var expectedData = new[]
@@ -131,7 +133,8 @@ And Jerry eats 1 orange";
         [Test]
         public void Leading_And_in_the_line_is_replaced_with_Then_and_the_line_is_matched_with_the_pattern_for_Then_if_And_line_is_after_Then_line()
         {
-            const string multilineCase = @"Then Tom has 1 apple and 1 orange
+            const string multilineCase = @"When ignore this line
+Then Tom has 1 apple and 1 orange
 And Jerry has 1 apple";
             var expectedData = new[]
                 {
@@ -151,9 +154,11 @@ And Jerry has 1 apple";
 And Jerry has 1 apple and 1 orange", @"Given (.*) has (\d+) apple(s|) and (\d+) orange(s|)", "Tom,2,s,3,s")]
         [TestCase(@"When Tom eats 1 apple and 2 oranges
 And Jerry eats 1 orange", @"When (.*) eats (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)", "Tom,1, apple,, and ,2, orange,s")]
-        [TestCase(@"Then Tom has 1 apple and 1 orange
+        [TestCase(@"When ignore this line
+Then Tom has 1 apple and 1 orange
 And Jerry has 1 apple", @"Then (.*) has (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)", "Tom,1, apple,, and ,1, orange,")]
-        [TestCase(@"Then Tom has 1 apple and 1 orange
+        [TestCase(@"When ignore this line
+Then Tom has 1 apple and 1 orange
 And Jerry has 1 apple", @"And (.*) has (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)", "Jerry,1, apple,,,,,")]
         public void Leading_And_in_the_line_is_not_replaced_and_the_line_is_matched_with_the_pattern_for_And_when_OriginalTestCase_option_is_selected
             (string @case, string pattern, string parsedData)
@@ -169,6 +174,17 @@ And Jerry has 1 apple", @"And (.*) has (|\d+)( apple|)(s|)(| and )(|\d+)( orange
                 .ParseMultiLines(From.OriginalTestCase);
 
             multiLineParseResult.ShouldAllBeEquivalentTo(new[] { parsedData.Split(',') });
+        }
+
+        [TestCase(@"Case #1: Given Tom has 2 apples and 3 oranges
+And Jerry has 1 apple and 1 orange")]
+        [TestCase(@"Then Tom has 2 apples and 3 oranges
+And Jerry has 1 apple and 1 orange")]
+        [TestCase(@"And Tom has 2 apples and 3 oranges
+And Jerry has 1 apple and 1 orange")]
+        public void When_a_test_case_begins_with_other_than_Given_and_When_it_throws(string @case)
+        {
+            Assert.Throws<GwtParserException>(() => TinyGWTParser.WithTestCase(@case));
         }
     }
 }
