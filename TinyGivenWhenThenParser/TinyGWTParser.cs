@@ -12,8 +12,8 @@ namespace TinyGivenWhenThenParser
 
         private TinyGWTParser(string testCase)
         {
-            _testCaseLines = testCase.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None).Select(c => c.Trim());
-            Console.WriteLine("Number of lines: {0}", _testCaseLines.Count());
+            _testCaseLines = testCase
+                .Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None).Select(c => c.Trim());
         }
 
         public IList<string> ParseSingleLine()
@@ -30,37 +30,24 @@ namespace TinyGivenWhenThenParser
 
         private IEnumerable<IList<string>> ParseData(bool multiLine)
         {
-            var results = new List<IList<string>>();
-
-            Console.WriteLine("pattern: {0}", _pattern);
             foreach (var line in _testCaseLines)
             {
                 var matchResult = Regex.Match(line, _pattern);
 
-                Console.WriteLine("line: {0}", line);
                 if (!matchResult.Success)
-                {
-                    Console.WriteLine("Not matched");
                     continue;
-                }
-                Console.WriteLine("Matched");
 
                 var result = new List<string>();
                 for (var i = 1; i < matchResult.Groups.Count; i++)
                 {
                     result.Add(matchResult.Groups[i].Value);
                 }
-                Console.WriteLine("Parsed data: {0}", string.Join(",", result));
 
-                results.Add(result);
+                yield return result;
 
                 if (!multiLine)
                     break;
             }
-            Console.WriteLine("Returning results:");
-            foreach (var result in results)
-                Console.WriteLine(string.Join(",", result));
-            return results;
         }
 
         public static TinyGWTParser WithTestCase(string testCase)
