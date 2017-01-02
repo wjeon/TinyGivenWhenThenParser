@@ -5,9 +5,17 @@ namespace TinyGivenWhenThenParser
 {
     public class TinyGWTParser
     {
-        public IList<string> ParseData(string value, string pattern)
+        private string _testCase;
+        private string _pattern;
+
+        private TinyGWTParser(string testCase)
         {
-            var matchResult = Regex.Match(value, pattern);
+            _testCase = testCase;
+        }
+
+        public IList<string> ParseData()
+        {
+            var matchResult = Regex.Match(_testCase, _pattern);
 
             if (!matchResult.Success)
                 return new List<string>();
@@ -18,6 +26,17 @@ namespace TinyGivenWhenThenParser
                 result.Add(matchResult.Groups[i].Value);
             }
             return result;
+        }
+
+        public static TinyGWTParser WithTestCase(string testCase)
+        {
+            return new TinyGWTParser(testCase);
+        }
+
+        public TinyGWTParser WithPattern(string pattern)
+        {
+            _pattern = pattern;
+            return this;
         }
     }
 }
