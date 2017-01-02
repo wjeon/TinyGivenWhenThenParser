@@ -31,7 +31,7 @@ namespace TinyGivenWhenThenParser.Tests.Unit
         {
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
-            const string pattern = @"^When (.*) eats (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)$";
+            const string pattern = @"When (.*) eats (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)";
 
             var parseResult = gwtParser.WithPattern(pattern).ParseData();
 
@@ -48,7 +48,7 @@ namespace TinyGivenWhenThenParser.Tests.Unit
         {
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
-            const string pattern = @"^Then (.*) has (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)$";
+            const string pattern = @"^Then (.*) has (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)";
 
             var parseResult = gwtParser.WithPattern(pattern).ParseData();
 

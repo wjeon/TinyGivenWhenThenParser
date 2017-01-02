@@ -35,7 +35,7 @@ namespace TinyGivenWhenThenParser
 
         public TinyGWTParser WithPattern(string pattern)
         {
-            _pattern = pattern;
+            _pattern = string.Format("^{0}$", pattern.TrimStart('^').TrimEnd('$'));
             return this;
         }
     }
