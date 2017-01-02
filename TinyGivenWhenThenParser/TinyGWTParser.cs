@@ -8,12 +8,14 @@ namespace TinyGivenWhenThenParser
     public class TinyGWTParser
     {
         private readonly IEnumerable<string> _testCaseLines;
+        private readonly IEnumerable<string> _gwtLines;
         private string _pattern;
 
         private TinyGWTParser(string testCase)
         {
             _testCaseLines = testCase
                 .Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None).Select(c => c.Trim());
+            _gwtLines = ToGwtLinesFrom(_testCaseLines);
         }
 
         public IList<string> ParseSingleLine()
@@ -30,7 +32,7 @@ namespace TinyGivenWhenThenParser
 
         private IEnumerable<IList<string>> ParseData(bool multiLine)
         {
-            foreach (var line in _testCaseLines)
+            foreach (var line in _gwtLines)
             {
                 var matchResult = Regex.Match(line, _pattern);
 
@@ -59,6 +61,25 @@ namespace TinyGivenWhenThenParser
         {
             _pattern = string.Format("^{0}$", pattern.TrimStart('^').TrimEnd('$'));
             return this;
+        }
+
+        private IEnumerable<string> ToGwtLinesFrom(IEnumerable<string> lines)
+        {
+            var gwtLines = new List<string>();
+            var prefix = string.Empty;
+            foreach (var line in lines)
+            {
+                if (line.StartsWith("Given ") || line.StartsWith("When ") || line.StartsWith("Then "))
+                {
+                    prefix = line.Substring(0, line.IndexOf(" "));
+                    gwtLines.Add(line);
+                }
+                else if (line.StartsWith("And "))
+                {
+                    gwtLines.Add(string.Format("!{0}", line).Replace("!And", prefix));
+                }
+            }
+            return gwtLines;
         }
     }
 }
