@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -30,24 +31,34 @@ namespace TinyGivenWhenThenParser
         {
             var results = new List<IList<string>>();
 
+            Console.WriteLine("pattern: {0}", _pattern);
             foreach (var line in _testCaseLines)
             {
                 var matchResult = Regex.Match(line, _pattern);
 
+                Console.WriteLine("line: {0}", line);
                 if (!matchResult.Success)
+                {
+                    Console.WriteLine("Not matched");
                     continue;
+                }
+                Console.WriteLine("Matched");
 
                 var result = new List<string>();
                 for (var i = 1; i < matchResult.Groups.Count; i++)
                 {
                     result.Add(matchResult.Groups[i].Value);
                 }
+                Console.WriteLine("Parsed data: {0}", string.Join(",", result));
 
                 results.Add(result);
 
                 if (!multiLine)
                     break;
             }
+            Console.WriteLine("Returning results:");
+            foreach (var result in results)
+                Console.WriteLine(string.Join(",", result));
             return results;
         }
 
