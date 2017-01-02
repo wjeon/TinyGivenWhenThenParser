@@ -14,9 +14,8 @@ namespace TinyGivenWhenThenParser.Tests.Unit
         {
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
-            const string pattern = @"^Given (.*) has (\d+) apple(s|) and (\d+) orange(s|)$";
-
-            var parseResult = gwtParser.WithPattern(pattern).ParseSingleLine();
+            var parseResult = gwtParser.WithPattern(@"^Given (.*) has (\d+) apple(s|) and (\d+) orange(s|)$")
+                .ParseSingleLine();
 
             var expectedData = string.IsNullOrEmpty(parsedData) ? new string[0] : parsedData.Split(',');
 
@@ -31,9 +30,8 @@ namespace TinyGivenWhenThenParser.Tests.Unit
         {
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
-            const string pattern = @"When (.*) eats (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)";
-
-            var parseResult = gwtParser.WithPattern(pattern).ParseSingleLine();
+            var parseResult = gwtParser.WithPattern(@"When (.*) eats (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)")
+                .ParseSingleLine();
 
             var expectedData = string.IsNullOrEmpty(parsedData) ? new string[0] : parsedData.Split(',');
 
@@ -48,9 +46,8 @@ namespace TinyGivenWhenThenParser.Tests.Unit
         {
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
-            const string pattern = @"^Then (.*) has (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)";
-
-            var parseResult = gwtParser.WithPattern(pattern).ParseSingleLine();
+            var parseResult = gwtParser.WithPattern(@"^Then (.*) has (|\d+)( apple|)(s|)(| and )(|\d+)( orange|)(s|)")
+                .ParseSingleLine();
 
             var expectedData = string.IsNullOrEmpty(parsedData) ? new string[0] : parsedData.Split(',');
 
@@ -67,9 +64,8 @@ Given Jerry has 1 orange";
 
             var gwtParser = TinyGWTParser.WithTestCase(multilineCase);
 
-            const string pattern = @"^Given (.*) has (\d+) (apple|orange)(s|)";
-
-            var parseResult = gwtParser.WithPattern(pattern).ParseSingleLine();
+            var parseResult = gwtParser.WithPattern(@"^Given (.*) has (\d+) (apple|orange)(s|)")
+                .ParseSingleLine();
 
             parseResult.ShouldAllBeEquivalentTo(expectedData);
         }
