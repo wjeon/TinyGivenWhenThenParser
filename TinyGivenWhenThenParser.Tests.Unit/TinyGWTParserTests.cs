@@ -56,5 +56,22 @@ namespace TinyGivenWhenThenParser.Tests.Unit
 
             parseResult.ShouldAllBeEquivalentTo(expectedData);
         }
+
+        [Test]
+        public void When_test_case_has_multi_lines_parser_parses_data_from_the_first_matching_line()
+        {
+            const string multilineCase = @"not matching line
+Given Tom has 3 apples
+Given Jerry has 1 orange";
+            var expectedData = new[] { "Tom", "3", "apple", "s"};
+
+            var gwtParser = TinyGWTParser.WithTestCase(multilineCase);
+
+            const string pattern = @"^Given (.*) has (\d+) (apple|orange)(s|)";
+
+            var parseResult = gwtParser.WithPattern(pattern).ParseData();
+
+            parseResult.ShouldAllBeEquivalentTo(expectedData);
+        }
     }
 }

@@ -1,31 +1,36 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace TinyGivenWhenThenParser
 {
     public class TinyGWTParser
     {
-        private string _testCase;
+        private readonly IEnumerable<string> _testCaseLines;
         private string _pattern;
 
         private TinyGWTParser(string testCase)
         {
-            _testCase = testCase;
+            _testCaseLines = testCase.Split('\r').Select(c => c.Trim());
         }
 
         public IList<string> ParseData()
         {
-            var matchResult = Regex.Match(_testCase, _pattern);
-
-            if (!matchResult.Success)
-                return new List<string>();
-
-            var result = new List<string>();
-            for (var i = 1; i < matchResult.Groups.Count; i++)
+            foreach (var line in _testCaseLines)
             {
-                result.Add(matchResult.Groups[i].Value);
+                var matchResult = Regex.Match(line, _pattern);
+
+                if (!matchResult.Success)
+                    continue;
+
+                var result = new List<string>();
+                for (var i = 1; i < matchResult.Groups.Count; i++)
+                {
+                    result.Add(matchResult.Groups[i].Value);
+                }
+                return result;
             }
-            return result;
+            return new List<string>();
         }
 
         public static TinyGWTParser WithTestCase(string testCase)
