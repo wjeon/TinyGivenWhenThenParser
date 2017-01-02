@@ -12,7 +12,7 @@ namespace TinyGivenWhenThenParser
 
         private TinyGWTParser(string testCase)
         {
-            _testCaseLines = testCase.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            _testCaseLines = testCase.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None).Select(c => c.Trim());
             Console.WriteLine("Number of lines: {0}", _testCaseLines.Count());
         }
 
