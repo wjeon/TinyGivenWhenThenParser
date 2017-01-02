@@ -64,7 +64,7 @@ Given Jerry has 1 orange";
 
             var gwtParser = TinyGWTParser.WithTestCase(multilineCase);
 
-            var parseResult = gwtParser.WithPattern(@"^Given (.*) has (\d+) (apple|orange)(s|)")
+            var parseResult = gwtParser.WithPattern(@"Given (.*) has (\d+) (apple|orange)(s|)")
                 .ParseSingleLine();
 
             parseResult.ShouldAllBeEquivalentTo(expectedData);
@@ -84,7 +84,7 @@ Given Jerry has 1 orange";
 
             var gwtParser = TinyGWTParser.WithTestCase(multilineCase);
 
-            var parseResult = gwtParser.WithPattern(@"^Given (.*) has (\d+) (apple|orange)(s|)")
+            var parseResult = gwtParser.WithPattern(@"Given (.*) has (\d+) (apple|orange)(s|)")
                 .ParseMultiLines();
 
             parseResult.ShouldAllBeEquivalentTo(expectedData);
