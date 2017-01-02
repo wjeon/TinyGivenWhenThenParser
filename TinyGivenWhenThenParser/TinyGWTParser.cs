@@ -28,6 +28,8 @@ namespace TinyGivenWhenThenParser
 
         private IEnumerable<IList<string>> ParseData(bool multiLine)
         {
+            var results = new List<IList<string>>();
+
             foreach (var line in _testCaseLines)
             {
                 var matchResult = Regex.Match(line, _pattern);
@@ -41,11 +43,12 @@ namespace TinyGivenWhenThenParser
                     result.Add(matchResult.Groups[i].Value);
                 }
 
-                yield return result;
+                results.Add(result);
 
                 if (!multiLine)
                     break;
             }
+            return results;
         }
 
         public static TinyGWTParser WithTestCase(string testCase)
