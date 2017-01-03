@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace TinyGivenWhenThenParser.Tests.Unit
@@ -202,6 +203,64 @@ And Jerry has 1 apple and 1 orange")]
 Also Jerry has 1 apple and 1 orange";
 
             Assert.Throws<GwtParserException>(() => TinyGWTParser.WithTestCase(@case));
+        }
+
+        [Test]
+        public void ParseSingleLine_parses_with_generic_type()
+        {
+            const string @case = "Given Tom has 2 apples and 3 oranges";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parseResult = gwtParser.WithPattern(@"^Given (.*) has (\d+) apple(s|) and (\d+) orange(s|)$")
+                .ParseSingleLine<TestData>();
+
+            var expectedResult = new ParseResult<TestData>(true,
+                new TestData
+                    {
+                        Name = "Tom",
+                        Fruits = new Dictionary<string, int>
+                        {
+                            { "Apple", 2 },
+                            { "Orange", 3 }
+                        }
+                    });
+
+            parseResult.ShouldBeEquivalentTo(expectedResult);
+        }
+
+        [Test]
+        public void ParseMultiLines_parses_with_generic_type()
+        {
+            const string @case = @"Given Tom has 2 apples and 3 oranges
+And Jerry has 1 apple and 1 orange";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parseResult = gwtParser.WithPattern(@"^Given (.*) has (\d+) apple(s|) and (\d+) orange(s|)$")
+                .ParseMultiLines<TestData>();
+
+            var expectedResult = new ParseResult<List<TestData>>(true, new List<TestData> {
+                new TestData
+                {
+                    Name = "Tom",
+                    Fruits = new Dictionary<string, int>
+                        {
+                            { "Apple", 2 },
+                            { "Orange", 3 }
+                        }
+                },
+                new TestData
+                {
+                    Name = "Jerry",
+                    Fruits = new Dictionary<string, int>
+                        {
+                            { "Apple", 1 },
+                            { "Orange", 1 }
+                        }
+                }});
+
+            parseResult.ShouldBeEquivalentTo(expectedResult);
         }
     }
 }

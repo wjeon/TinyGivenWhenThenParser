@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestData.cs" />
     <Compile Include="TinyGWTParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
