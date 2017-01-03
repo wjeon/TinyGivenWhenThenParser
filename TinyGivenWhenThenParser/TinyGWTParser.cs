@@ -21,21 +21,45 @@ namespace TinyGivenWhenThenParser
             _gwtLines = ToGwtLinesFrom(_testCaseLines);
         }
 
-        public IList<string> ParseSingleLine(From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
+        public ParseResult<IList<string>> ParseSingleLine(From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
         {
             var result = ParseData(testCase, multiLine: false);
 
-            return result.Any() ? result.First() : new List<string>();
+            return new ParseResult<IList<string>>(result.Parsed, result.Data.Any() ? result.Data.First() : new List<string>());
         }
 
-        public IEnumerable<IList<string>> ParseMultiLines(From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
+        public ParseResult<T> ParseSingleLine<T>(From testCase = From.TestCaseReplacedAndWithGivenWhenThen) where T : class
+        {
+            var result = ParseData(testCase, multiLine: false);
+
+            return new ParseResult<T>(result.Parsed,
+                result.Data.Any() ? (T)Activator.CreateInstance(typeof(T), result.Data.First()) : default(T));
+        }
+
+        public ParseResult<IEnumerable<IList<string>>> ParseMultiLines(From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
         {
             return ParseData(testCase, multiLine: true);
         }
 
-        private IEnumerable<IList<string>> ParseData(From testCase, bool multiLine)
+        public ParseResult<IEnumerable<T>> ParseMultiLines<T>(From testCase = From.TestCaseReplacedAndWithGivenWhenThen) where T : class
+        {
+            var result = ParseData(testCase, multiLine: true);
+
+            var dataList = new List<T>();
+
+            if (result.Data.Any())
+            {
+                dataList.AddRange(result.Data.Select(data => (T)Activator.CreateInstance(typeof(T), data)));
+            }
+
+            return new ParseResult<IEnumerable<T>>(result.Parsed, dataList);
+        }
+
+        private ParseResult<IEnumerable<IList<string>>> ParseData(From testCase, bool multiLine)
         {
             var lines = testCase == From.OriginalTestCase ? _testCaseLines : _gwtLines;
+            var parsed = false;
+            var results = new List<IList<string>>();
 
             foreach (var line in lines)
             {
@@ -44,17 +68,21 @@ namespace TinyGivenWhenThenParser
                 if (!matchResult.Success)
                     continue;
 
+                parsed = true;
+
                 var result = new List<string>();
                 for (var i = 1; i < matchResult.Groups.Count; i++)
                 {
                     result.Add(matchResult.Groups[i].Value);
                 }
 
-                yield return result;
+                results.Add(result);
 
                 if (!multiLine)
                     break;
             }
+
+            return new ParseResult<IEnumerable<IList<string>>>(parsed, results);
         }
 
         public static TinyGWTParser WithTestCase(string testCase)
