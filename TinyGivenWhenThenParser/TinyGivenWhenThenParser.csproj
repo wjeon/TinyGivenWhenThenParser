@@ -43,6 +43,7 @@
     <Compile Include="GwtParserException.cs" />
     <Compile Include="ParseResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Property.cs" />
     <Compile Include="TinyGWTParser.cs" />
   </ItemGroup>
   <ItemGroup>
