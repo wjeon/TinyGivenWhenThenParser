@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
+using TinyGivenWhenThenParser.Extensions;
 
 namespace TinyGivenWhenThenParser.Tests.Unit
 {
@@ -261,6 +263,39 @@ And Jerry has 1 apple and 1 orange";
                 }});
 
             parseResult.ShouldBeEquivalentTo(expectedResult);
+        }
+
+        [Test]
+        public void Strings_in_single_line_that_matched_with_the_pattern_are_parsed_correctly_to_the_types_configured_with_to_method()
+        {
+            const string @case = @"Given test data - Name: Tom, Age: 2, Favorite Fruit: apple, Date: 2017/1/10, Time: 10:35:17, DateTimeOffset: 2017-01-10T17:30:21-08:00, ID: 6579328A-B45A-48EB-BC1C-68018157F47A, Hour of day: 3pm";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parseResult = gwtParser.WithPattern(@"Given test data - Name: (.*), Age: (\d+), Favorite Fruit: (apple|orange), Date: (.*), Time: (.*), DateTimeOffset: (.*), ID: (.*), Hour of day: ((?:[1][0-2]|[1-9])(?:am|pm))")
+                .To("Name".As<string>(), "Quantity".As<int>(), "FavoriteFruit".As<Fruit>(), "Date".As<DateTime>(), "Time".As<TimeSpan>(), "DateTimeOffset".As<DateTimeOffset>(), "Id".As<Guid>(), "HourOfDay".As<HourOfDay>())
+                .ParseSingleLine();
+            var data = parseResult.Data;
+
+            var expected = new Dictionary<string, object>
+            {
+                { "Name", "Tom" },
+                { "Quantity", 2 },
+                { "FavoriteFruit", Fruit.Apple },
+                { "Date", DateTime.Parse("2017/1/10") },
+                { "Time", TimeSpan.Parse("10:35:17") },
+                { "DateTimeOffset", DateTimeOffset.Parse("2017-01-10T17:30:21-08:00") },
+                { "Id", Guid.Parse("6579328A-B45A-48EB-BC1C-68018157F47A") },
+                {"HourOfDay", new HourOfDay("3pm") }
+            };
+
+            ((object)data).ShouldBeEquivalentTo(expected);
+        }
+
+        private enum Fruit
+        {
+            Apple,
+            Orange
         }
     }
 }
