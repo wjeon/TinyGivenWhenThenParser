@@ -123,7 +123,7 @@ namespace TinyGivenWhenThenParser
         {
             Properties = properties;
 
-            return new TinyGWTDynamicParser();
+            return new TinyGWTDynamicParser(this);
         }
     }
 }
