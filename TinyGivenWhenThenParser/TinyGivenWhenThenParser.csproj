@@ -39,15 +39,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\NoResolvableConstructorException.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="From.cs" />
-    <Compile Include="GwtParserException.cs" />
+    <Compile Include="Exceptions\GwtParserException.cs" />
     <Compile Include="ParseResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Property.cs" />
+    <Compile Include="StringConverters\Constructor.cs" />
+    <Compile Include="StringConverters\Converter.cs" />
+    <Compile Include="TinyGWTDynamicParser.cs" />
     <Compile Include="TinyGWTParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TinyGWTParser.nuspec" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
