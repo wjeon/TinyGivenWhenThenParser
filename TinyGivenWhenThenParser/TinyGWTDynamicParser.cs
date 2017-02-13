@@ -21,9 +21,14 @@ namespace TinyGivenWhenThenParser
                                             result.Data.Any() ? ParseFrom(result.Data, _parser.Properties) : null);
         }
 
-        public ParseResult<IEnumerable<dynamic>> ParseMultiLines()
+        public ParseResult<IEnumerable<dynamic>> ParseMultiLines(From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
         {
-            throw new System.NotImplementedException();
+            var result = _parser.ParseMultiLines(testCase);
+
+            return new ParseResult<IEnumerable<dynamic>>(result.Parsed,
+                                            result.Data.Any()
+                                            ? result.Data.Select(d => d.Any() ? ParseFrom(d, _parser.Properties) : null)
+                                            : new List<dynamic>());
         }
 
         private static dynamic ParseFrom(IList<string> data, IList<Property> properties)
