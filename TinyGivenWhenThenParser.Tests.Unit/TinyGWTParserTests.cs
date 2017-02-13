@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using TinyGivenWhenThenParser.Exceptions;
@@ -291,6 +292,48 @@ And Jerry has 1 apple and 1 orange";
             };
 
             ((object)data).ShouldBeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void Strings_in_multi_lines_that_matched_with_the_pattern_are_parsed_correctly_to_the_types_configured_with_to_method()
+        {
+            const string @case = @"Given test data - Name: Tom, Age: 2, Favorite Fruit: apple, Date: 2017/1/10, Time: 10:35:17, DateTimeOffset: 2017-01-10T17:30:21-08:00, ID: 6579328A-B45A-48EB-BC1C-68018157F47A, Hour of day: 3pm
+And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F, Hour of day: 11am";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parseResult = gwtParser.WithPattern(@"Given test data - Name: (.*), Age: (\d+), Favorite Fruit: (apple|orange), Date: (.*), Time: (.*), DateTimeOffset: (.*), ID: (.*), Hour of day: ((?:[1][0-2]|[1-9])(?:am|pm))")
+                .To("Name".As<string>(), "Quantity".As<int>(), "FavoriteFruit".As<Fruit>(), "Date".As<DateTime>(), "Time".As<TimeSpan>(), "DateTimeOffset".As<DateTimeOffset>(), "Id".As<Guid>(), "HourOfDay".As<HourOfDay>())
+                .ParseMultiLines();
+            var data = parseResult.Data.ToArray();
+
+            var expected = new List<Dictionary<string, object>>
+            {
+                new Dictionary<string, object>
+                {
+                    { "Name", "Tom" },
+                    { "Quantity", 2 },
+                    { "FavoriteFruit", Fruit.Apple },
+                    { "Date", DateTime.Parse("2017/1/10") },
+                    { "Time", TimeSpan.Parse("10:35:17") },
+                    { "DateTimeOffset", DateTimeOffset.Parse("2017-01-10T17:30:21-08:00") },
+                    { "Id", Guid.Parse("6579328A-B45A-48EB-BC1C-68018157F47A") },
+                    { "HourOfDay", new HourOfDay("3pm") }
+                },
+                new Dictionary<string, object>
+                {
+                    { "Name", "Jerry" },
+                    { "Quantity", 1 },
+                    { "FavoriteFruit", Fruit.Orange },
+                    { "Date", DateTime.Parse("2017/2/1") },
+                    { "Time", TimeSpan.Parse("05:42:02") },
+                    { "DateTimeOffset", DateTimeOffset.Parse("2017-02-01T06:51:16-08:00") },
+                    { "Id", Guid.Parse("B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F") },
+                    { "HourOfDay", new HourOfDay("11am") }
+                }
+            };
+
+            ((object)parseResult.Data).ShouldBeEquivalentTo(expected);
         }
 
         private enum Fruit

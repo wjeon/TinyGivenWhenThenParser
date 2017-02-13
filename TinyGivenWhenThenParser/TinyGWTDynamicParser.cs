@@ -21,6 +21,11 @@ namespace TinyGivenWhenThenParser
                                             result.Data.Any() ? ParseFrom(result.Data, _parser.Properties) : null);
         }
 
+        public ParseResult<IEnumerable<dynamic>> ParseMultiLines()
+        {
+            throw new System.NotImplementedException();
+        }
+
         private static dynamic ParseFrom(IList<string> data, IList<Property> properties)
         {
             dynamic obj = new System.Dynamic.ExpandoObject();
