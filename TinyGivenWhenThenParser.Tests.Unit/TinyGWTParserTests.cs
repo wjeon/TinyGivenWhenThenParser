@@ -216,7 +216,7 @@ Also Jerry has 1 apple and 1 orange";
 
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
-            var parseResult = gwtParser.WithPattern(@"^Given (.*) has (\d+) apple(s|) and (\d+) orange(s|)$")
+            var parseResult = gwtParser.WithPattern(@"^Given (.*) has (\d+) apple(?:s|) and (\d+) orange(?:s|)$")
                 .ParseSingleLine<TestData>();
 
             var expectedResult = new ParseResult<TestData>(true,
@@ -241,7 +241,7 @@ And Jerry has 1 apple and 1 orange";
 
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
-            var parseResult = gwtParser.WithPattern(@"^Given (.*) has (\d+) apple(s|) and (\d+) orange(s|)$")
+            var parseResult = gwtParser.WithPattern(@"^Given (.*) has (\d+) apple(?:s|) and (\d+) orange(?:s|)$")
                 .ParseMultiLines<TestData>();
 
             var expectedResult = new ParseResult<List<TestData>>(true, new List<TestData> {

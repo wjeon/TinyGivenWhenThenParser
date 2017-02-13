@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TinyGivenWhenThenParser.Exceptions;
+using TinyGivenWhenThenParser.StringConverters;
 
 namespace TinyGivenWhenThenParser
 {
@@ -36,7 +37,7 @@ namespace TinyGivenWhenThenParser
             var result = ParseData(testCase, multiLine: false);
 
             return new ParseResult<T>(result.Parsed,
-                result.Data.Any() ? (T)Activator.CreateInstance(typeof(T), result.Data.First()) : default(T));
+                result.Data.Any() ? result.Data.First().ToCostruct<T>() : default(T));
         }
 
         public ParseResult<IEnumerable<IList<string>>> ParseMultiLines(From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
@@ -52,7 +53,7 @@ namespace TinyGivenWhenThenParser
 
             if (result.Data.Any())
             {
-                dataList.AddRange(result.Data.Select(data => (T)Activator.CreateInstance(typeof(T), data)));
+                dataList.AddRange(result.Data.Select(data => data.ToCostruct<T>()));
             }
 
             return new ParseResult<IEnumerable<T>>(result.Parsed, dataList);
