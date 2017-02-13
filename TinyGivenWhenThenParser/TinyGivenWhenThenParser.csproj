@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="From.cs" />
     <Compile Include="GwtParserException.cs" />
     <Compile Include="ParseResult.cs" />
