@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
+using TinyGivenWhenThenParser.Exceptions;
 using TinyGivenWhenThenParser.Extensions;
 
 namespace TinyGivenWhenThenParser.Tests.Unit

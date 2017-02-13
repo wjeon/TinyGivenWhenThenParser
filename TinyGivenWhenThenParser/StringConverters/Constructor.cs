@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TinyGivenWhenThenParser.Exceptions;
 
 namespace TinyGivenWhenThenParser.StringConverters
 {
@@ -28,7 +29,7 @@ namespace TinyGivenWhenThenParser.StringConverters
                 }
             }
 
-            throw new Exception("No resolvable constructor found");
+            throw new NoResolvableConstructorException("No resolvable constructor found");
         }
     }
 }
