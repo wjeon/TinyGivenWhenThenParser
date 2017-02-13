@@ -96,7 +96,7 @@ namespace TinyGivenWhenThenParser
             return this;
         }
 
-        private IEnumerable<string> ToGwtLinesFrom(IEnumerable<string> lines)
+        private static IEnumerable<string> ToGwtLinesFrom(IEnumerable<string> lines)
         {
             var gwtLines = new List<string>();
             var prefix = string.Empty;
