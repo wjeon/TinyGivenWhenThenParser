@@ -21,6 +21,8 @@ namespace TinyGivenWhenThenParser
             _gwtLines = ToGwtLinesFrom(_testCaseLines);
         }
 
+        public IList<Property> Properties { get; private set; }
+
         public ParseResult<IList<string>> ParseSingleLine(From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
         {
             var result = ParseData(testCase, multiLine: false);
@@ -119,6 +121,8 @@ namespace TinyGivenWhenThenParser
 
         public TinyGWTDynamicParser To(params Property[] properties)
         {
+            Properties = properties;
+
             return new TinyGWTDynamicParser();
         }
     }
