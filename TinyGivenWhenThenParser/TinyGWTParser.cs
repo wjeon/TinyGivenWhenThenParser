@@ -116,5 +116,10 @@ namespace TinyGivenWhenThenParser
             }
             return gwtLines;
         }
+
+        public TinyGWTDynamicParser To(params Property[] properties)
+        {
+            return new TinyGWTDynamicParser();
+        }
     }
 }
