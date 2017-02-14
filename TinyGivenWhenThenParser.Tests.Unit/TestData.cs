@@ -6,13 +6,13 @@ namespace TinyGivenWhenThenParser.Tests.Unit
     {
         public TestData() { }
 
-        public TestData(IList<string> data)
+        public TestData(string name, int apples, int oranges)
         {
-            Name = data[0];
+            Name = name;
             Fruits = new Dictionary<string, int>
                 {
-                    { "Apple", int.Parse(data[1]) },
-                    { "Orange", int.Parse(data[3]) }
+                    { "Apple", apples },
+                    { "Orange", oranges }
                 };
         }
 
