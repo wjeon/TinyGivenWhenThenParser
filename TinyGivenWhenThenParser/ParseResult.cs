@@ -1,6 +1,6 @@
 ﻿namespace TinyGivenWhenThenParser
 {
-    public class ParseResult<T> where T : class
+    public class ParseResult<T>
     {
         public ParseResult() {}
 
