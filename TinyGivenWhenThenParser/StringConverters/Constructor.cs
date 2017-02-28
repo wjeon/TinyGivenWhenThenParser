@@ -30,7 +30,7 @@ namespace TinyGivenWhenThenParser.StringConverters
                 try
                 {
                     return Activator.CreateInstance(type,
-                                                    data.Select((t, i) => Converter.ConvertTo(t, parameters[i].ParameterType)).ToArray());
+                        data.Select((t, i) => Converter.ConvertTo(t, parameters[i].ParameterType)).ToArray());
                 }
                 catch (FormatException)
                 {
