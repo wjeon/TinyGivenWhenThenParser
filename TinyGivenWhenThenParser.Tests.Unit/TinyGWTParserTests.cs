@@ -335,6 +335,96 @@ And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Tim
             ((object)parseResult.Data).ShouldBeEquivalentTo(expected);
         }
 
+        [TestCase("Given nullable integer: .", "")]
+        [TestCase("Given nullable integer: 3.", "3")]
+        public void ParseSingleLine_parses_the_match_to_nullable_type_correctly(string @case, string result)
+        {
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parseResult = gwtParser.WithPattern(@"Given nullable integer: (|\d+).")
+                .ParseSingleLine<int?>();
+
+            var expected = string.IsNullOrEmpty(result) ? (int?)null : int.Parse(result);
+
+            parseResult.Data.Should().Be(expected);
+        }
+
+        [Test]
+        public void ParseMultiLines_parses_the_matches_to_nullable_type_correctly()
+        {
+            const string @case = @"Given nullable integer: .
+And nullable integer: 3.";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parseResult = gwtParser.WithPattern(@"Given nullable integer: (|\d+).")
+                .ParseMultiLines<int?>();
+
+            var expected = new List<int?> { null, 3 };
+
+            parseResult.Data.ShouldAllBeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void Matches_are_parsed_to_nullable_types_and_returned_via_properties_in_dynamic_object()
+        {
+            const string @case = @"Given nullable TimeSpan: 00:17:00, nullable integer: .
+And nullable TimeSpan: , nullable integer: 3.";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parseResult = gwtParser.WithPattern(@"Given nullable TimeSpan: (|.*), nullable integer: (|\d+).")
+                .To("NullableTimeSpan".As<TimeSpan?>(), "NullableInteger".As<int?>())
+                .ParseMultiLines();
+
+            var expected = new List<Dictionary<string, object>>
+            {
+                new Dictionary<string, object>
+                {
+                    { "NullableTimeSpan", TimeSpan.FromMinutes(17) },
+                    { "NullableInteger", null }
+                },
+                new Dictionary<string, object>
+                {
+                    { "NullableTimeSpan", null },
+                    { "NullableInteger", 3 }
+                }
+            };
+
+            ((object)parseResult.Data).ShouldBeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void Matches_are_parsed_to_nullable_types_via_constructor_parameters()
+        {
+            const string @case = @"Given nullable integer: .
+And nullable integer: 3.";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parseResult = gwtParser.WithPattern(@"Given nullable integer: (|\d+).")
+                .ParseMultiLines<NullableInteger>();
+
+            var expected = new List<int?> { null, 3 };
+
+            parseResult.Data.Select(d => (int?)d).ShouldAllBeEquivalentTo(expected);
+        }
+
+        private class NullableInteger
+        {
+            private readonly int? _value;
+
+            public NullableInteger(int? value)
+            {
+                _value = value;
+            }
+
+            public static explicit operator int?(NullableInteger nullableInteger)
+            {
+                return nullableInteger._value;
+            }
+        }
+
         private enum Fruit
         {
             Apple,
