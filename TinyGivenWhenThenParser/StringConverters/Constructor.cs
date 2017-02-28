@@ -7,13 +7,17 @@ namespace TinyGivenWhenThenParser.StringConverters
 {
     internal static class Constructor
     {
-        public static T ToCostruct<T>(this IList<string> data) where T : class
+        public static T ToCostruct<T>(this IList<string> data)
         {
             return (T)data.ToCostruct(typeof(T));
         }
 
         public static object ToCostruct(this IList<string> data, Type type)
         {
+            if (type.FullName.StartsWith("System.Nullable`") &&
+                data.Count == 1 && string.IsNullOrEmpty(data.First()))
+                return null;
+
             var constructors = type.GetConstructors();
 
             foreach (var constructor in constructors)

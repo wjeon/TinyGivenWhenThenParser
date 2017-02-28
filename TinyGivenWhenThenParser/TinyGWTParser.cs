@@ -32,7 +32,7 @@ namespace TinyGivenWhenThenParser
             return new ParseResult<IList<string>>(result.Parsed, result.Data.Any() ? result.Data.First() : new List<string>());
         }
 
-        public ParseResult<T> ParseSingleLine<T>(From testCase = From.TestCaseReplacedAndWithGivenWhenThen) where T : class
+        public ParseResult<T> ParseSingleLine<T>(From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
         {
             var result = ParseData(testCase, multiLine: false);
 
@@ -45,7 +45,7 @@ namespace TinyGivenWhenThenParser
             return ParseData(testCase, multiLine: true);
         }
 
-        public ParseResult<IEnumerable<T>> ParseMultiLines<T>(From testCase = From.TestCaseReplacedAndWithGivenWhenThen) where T : class
+        public ParseResult<IEnumerable<T>> ParseMultiLines<T>(From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
         {
             var result = ParseData(testCase, multiLine: true);
 
