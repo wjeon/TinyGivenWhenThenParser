@@ -6,5 +6,15 @@
         {
             return new Property(name, typeof(T));
         }
+
+        public static Property IsA<T>(this string name)
+        {
+            return new Property(name, typeof(T));
+        }
+
+        public static Property Of<T>(this string name)
+        {
+            return new Property(name, typeof(T));
+        }
     }
 }
