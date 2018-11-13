@@ -219,18 +219,17 @@ Also Jerry has 1 apple and 1 orange";
             var parseResult = gwtParser.WithPattern(@"^Given (.*) has (\d+) apple(?:s|) and (\d+) orange(?:s|)$")
                 .ParseSingleLine<TestData>();
 
-            var expectedResult = new ParseResult<TestData>(true,
-                new TestData
-                    {
-                        Name = "Tom",
-                        Fruits = new Dictionary<string, int>
-                        {
-                            { "Apple", 2 },
-                            { "Orange", 3 }
-                        }
-                    });
+            var expectedResult = new TestData
+            {
+                Name = "Tom",
+                Fruits = new Dictionary<string, int>
+                {
+                    { "Apple", 2 },
+                    { "Orange", 3 }
+                }
+            };
 
-            parseResult.ShouldBeEquivalentTo(expectedResult);
+            parseResult.Data.ShouldBeEquivalentTo(expectedResult);
         }
 
         [Test]
@@ -244,7 +243,7 @@ And Jerry has 1 apple and 1 orange";
             var parseResult = gwtParser.WithPattern(@"^Given (.*) has (\d+) apple(?:s|) and (\d+) orange(?:s|)$")
                 .ParseMultiLines<TestData>();
 
-            var expectedResult = new ParseResult<List<TestData>>(true, new List<TestData> {
+            var expectedResult = new List<TestData> {
                 new TestData
                 {
                     Name = "Tom",
@@ -262,9 +261,10 @@ And Jerry has 1 apple and 1 orange";
                             { "Apple", 1 },
                             { "Orange", 1 }
                         }
-                }});
+                }
+            };
 
-            parseResult.ShouldBeEquivalentTo(expectedResult);
+            parseResult.Data.ShouldBeEquivalentTo(expectedResult);
         }
 
         [Test]
@@ -277,7 +277,6 @@ And Jerry has 1 apple and 1 orange";
             var parseResult = gwtParser.WithPattern(@"Given test data - Name: (.*), Age: (\d+), Favorite Fruit: (apple|orange), Date: (.*), Time: (.*), DateTimeOffset: (.*), ID: (.*), Hour of day: ((?:[1][0-2]|[1-9])(?:am|pm))")
                 .To("Name".As<string>(), "Quantity".As<int>(), "FavoriteFruit".As<Fruit>(), "Date".As<DateTime>(), "Time".As<TimeSpan>(), "DateTimeOffset".As<DateTimeOffset>(), "Id".As<Guid>(), "HourOfDay".As<HourOfDay>())
                 .ParseSingleLine();
-            var data = parseResult.Data;
 
             var expected = new Dictionary<string, object>
             {
@@ -291,7 +290,7 @@ And Jerry has 1 apple and 1 orange";
                 {"HourOfDay", new HourOfDay("3pm") }
             };
 
-            ((object)data).ShouldBeEquivalentTo(expected);
+            ((object)parseResult.Data).ShouldBeEquivalentTo(expected);
         }
 
         [Test]
