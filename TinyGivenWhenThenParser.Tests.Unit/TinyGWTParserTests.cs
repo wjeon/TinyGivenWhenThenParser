@@ -234,6 +234,32 @@ Also Jerry has 1 apple and 1 orange";
         }
 
         [Test]
+        public void Parses_with_custom_parser_class()
+        {
+            const string @case = "Given the meeting is at 10:30 on 15th of August";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+
+            var parseResult = gwtParser.WithPattern(@"^Given the meeting is at (.*) on (\d+)(?:st|nd|rd|th) of (.*)$")
+                                       .ParseSingleLine<DateTimeParser, DateTime>();
+
+            parseResult.Data.Should().Be(new DateTime(2018, 8, 15, 10, 30, 0));
+        }
+
+        private class DateTimeParser : IParser<DateTime>
+        {
+            public DateTimeParser(TimeSpan time, int day, string monthName)
+            {
+                var month = Convert.ToDateTime(monthName + " 01, 1900").Month;
+
+                Value = new DateTime(2018, month, day).Add(time);
+            }
+
+            public DateTime Value { get; private set; }
+        }
+
+        [Test]
         public void ParseMultiLines_parses_with_generic_type()
         {
             const string @case = @"Given Tom has 2 apples and 3 oranges
