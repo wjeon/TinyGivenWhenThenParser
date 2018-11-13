@@ -335,6 +335,213 @@ And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Tim
             ((object)parseResult.Data).ShouldBeEquivalentTo(expected);
         }
 
+        [Test]
+        public void Strings_in_single_line_that_matched_with_the_pattern_are_parsed_correctly_to_the_types_configured_with_to_method_and_construct_return_object()
+        {
+            const string @case = @"Given test data - Name: Tom, Age: 2, Favorite Fruit: apple, Date: 2017/1/10, Time: 10:35:17, DateTimeOffset: 2017-01-10T17:30:21-08:00, ID: 6579328A-B45A-48EB-BC1C-68018157F47A, Hour of day: 3pm";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parseResult = gwtParser.WithPattern(@"Given test data - Name: (.*), Age: (\d+), Favorite Fruit: (apple|orange), Date: (.*), Time: (.*), DateTimeOffset: (.*), ID: (.*), Hour of day: ((?:[1][0-2]|[1-9])(?:am|pm))")
+                                       .To("name".As<string>(), "quantity".As<int>(), "favoriteFruit".As<Fruit>(), "date".As<DateTime>(), "time".As<TimeSpan>(), "dateTimeOffset".As<DateTimeOffset>(), "id".As<Guid>(), "hourOfDay".As<HourOfDay>())
+                                       .ParseSingleLine<ObjectWithConstructor>(Using.Constructor);
+
+            var expected = new ObjectWithConstructor(
+                Guid.Parse("6579328A-B45A-48EB-BC1C-68018157F47A"), new HourOfDay("3pm"), TimeSpan.Parse("10:35:17"), DateTimeOffset.Parse("2017-01-10T17:30:21-08:00"), Fruit.Apple, DateTime.Parse("2017/1/10"), "Tom", 2);
+
+            parseResult.Data.ShouldBeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void Strings_in_multi_lines_that_matched_with_the_pattern_are_parsed_correctly_to_the_types_configured_with_to_method_and_construct_return_object()
+        {
+            const string @case = @"Given test data - Name: Tom, Age: 2, Favorite Fruit: apple, Date: 2017/1/10, Time: 10:35:17, DateTimeOffset: 2017-01-10T17:30:21-08:00, ID: 6579328A-B45A-48EB-BC1C-68018157F47A, Hour of day: 3pm
+And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F, Hour of day: 11am";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parseResult = gwtParser.WithPattern(@"Given test data - Name: (.*), Age: (\d+), Favorite Fruit: (apple|orange), Date: (.*), Time: (.*), DateTimeOffset: (.*), ID: (.*), Hour of day: ((?:[1][0-2]|[1-9])(?:am|pm))")
+                                       .To("name".As<string>(), "quantity".As<int>(), "favoriteFruit".As<Fruit>(), "date".As<DateTime>(), "time".As<TimeSpan>(), "dateTimeOffset".As<DateTimeOffset>(), "id".As<Guid>(), "hourOfDay".As<HourOfDay>())
+                                       .ParseMultiLines<ObjectWithConstructor>(Using.Constructor);
+
+            var expected = new List<ObjectWithConstructor> {
+                new ObjectWithConstructor(
+                    Guid.Parse("6579328A-B45A-48EB-BC1C-68018157F47A"), new HourOfDay("3pm"), TimeSpan.Parse("10:35:17"), DateTimeOffset.Parse("2017-01-10T17:30:21-08:00"), Fruit.Apple, DateTime.Parse("2017/1/10"), "Tom", 2),
+                new ObjectWithConstructor(
+                    Guid.Parse("B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F"), new HourOfDay("11am"), TimeSpan.Parse("05:42:02"), DateTimeOffset.Parse("2017-02-01T06:51:16-08:00"), Fruit.Orange, DateTime.Parse("2017/2/1"), "Jerry", 1)
+            };
+
+            parseResult.Data.ShouldBeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void Additional_parameter_values_that_passed_to_with_method_are_added_to_the_parsed_values_for_constructor_parameters()
+        {
+            const string @case = @"Given test data - Time: 10:35:17, DateTimeOffset: 2017-01-10T17:30:21-08:00, ID: 6579328A-B45A-48EB-BC1C-68018157F47A, Hour of day: 3pm
+And test data - Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F, Hour of day: 11am";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parseResult = gwtParser.WithPattern(@"Given test data - Time: (.*), DateTimeOffset: (.*), ID: (.*), Hour of day: ((?:[1][0-2]|[1-9])(?:am|pm))")
+                                       .To("time".As<TimeSpan>(), "dateTimeOffset".As<DateTimeOffset>(), "id".As<Guid>(), "hourOfDay".As<HourOfDay>())
+                                       .With("name".Value("Tom"), "quantity".Value(2), "favoriteFruit".Value(Fruit.Apple), "date".Value(DateTime.Parse("2017/1/10")))
+                                       .ParseMultiLines<ObjectWithConstructor>(Using.Constructor);
+
+            var expected = new List<ObjectWithConstructor> {
+                new ObjectWithConstructor(
+                    Guid.Parse("6579328A-B45A-48EB-BC1C-68018157F47A"), new HourOfDay("3pm"), TimeSpan.Parse("10:35:17"), DateTimeOffset.Parse("2017-01-10T17:30:21-08:00"), Fruit.Apple, DateTime.Parse("2017/1/10"), "Tom", 2),
+                new ObjectWithConstructor(
+                    Guid.Parse("B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F"), new HourOfDay("11am"), TimeSpan.Parse("05:42:02"), DateTimeOffset.Parse("2017-02-01T06:51:16-08:00"), Fruit.Apple, DateTime.Parse("2017/1/10"), "Tom", 2)
+            };
+
+            parseResult.Data.ShouldBeEquivalentTo(expected);
+        }
+
+        private class ObjectWithConstructor
+        {
+            public ObjectWithConstructor(Guid id, HourOfDay hourOfDay, TimeSpan time, DateTimeOffset dateTimeOffset, Fruit favoriteFruit, DateTime date, string name, int quantity)
+            {
+                Id = id;
+                HourOfDay = hourOfDay;
+                Time = time;
+                DateTimeOffset = dateTimeOffset;
+                FavoriteFruit = favoriteFruit;
+                Date = date;
+                Name = name;
+                Quantity = quantity;
+            }
+
+            public Guid Id { get; private set; }
+            public HourOfDay HourOfDay { get; private set; }
+            public TimeSpan Time { get; private set; }
+            public DateTimeOffset DateTimeOffset { get; private set; }
+            public Fruit FavoriteFruit { get; private set; }
+            public DateTime Date { get; private set; }
+            public string Name { get; private set; }
+            public int Quantity { get; private set; }
+        }
+
+        [Test]
+        public void Strings_in_single_line_that_matched_with_the_pattern_are_parsed_correctly_to_the_types_configured_with_to_method_and_create_return_object()
+        {
+            const string @case = @"Given test data - Name: Tom, Age: 2, Favorite Fruit: apple, Date: 2017/1/10, Time: 10:35:17, DateTimeOffset: 2017-01-10T17:30:21-08:00, ID: 6579328A-B45A-48EB-BC1C-68018157F47A, Hour of day: 3pm";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parseResult = gwtParser.WithPattern(@"Given test data - Name: (.*), Age: (\d+), Favorite Fruit: (apple|orange), Date: (.*), Time: (.*), DateTimeOffset: (.*), ID: (.*), Hour of day: ((?:[1][0-2]|[1-9])(?:am|pm))")
+                                       .To("Name".As<string>(), "Quantity".As<int>(), "FavoriteFruit".As<Fruit>(), "Date".As<DateTime>(), "Time".As<TimeSpan>(), "DateTimeOffset".As<DateTimeOffset>(), "Id".As<Guid>(), "HourOfDay".As<HourOfDay>())
+                                       .ParseSingleLine<ObjectWithProperties>(Using.Properties);
+
+            var expected = new ObjectWithProperties
+            {
+                Id = Guid.Parse("6579328A-B45A-48EB-BC1C-68018157F47A"),
+                HourOfDay = new HourOfDay("3pm"),
+                Time = TimeSpan.Parse("10:35:17"),
+                DateTimeOffset = DateTimeOffset.Parse("2017-01-10T17:30:21-08:00"),
+                FavoriteFruit = Fruit.Apple,
+                Date = DateTime.Parse("2017/1/10"),
+                Name = "Tom",
+                Quantity = 2
+            };
+
+            parseResult.Data.ShouldBeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void Strings_in_multi_lines_that_matched_with_the_pattern_are_parsed_correctly_to_the_types_configured_with_to_method_and_create_return_object()
+        {
+            const string @case = @"Given test data - Name: Tom, Age: 2, Favorite Fruit: apple, Date: 2017/1/10, Time: 10:35:17, DateTimeOffset: 2017-01-10T17:30:21-08:00, ID: 6579328A-B45A-48EB-BC1C-68018157F47A, Hour of day: 3pm
+And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F, Hour of day: 11am";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parseResult = gwtParser.WithPattern(@"Given test data - Name: (.*), Age: (\d+), Favorite Fruit: (apple|orange), Date: (.*), Time: (.*), DateTimeOffset: (.*), ID: (.*), Hour of day: ((?:[1][0-2]|[1-9])(?:am|pm))")
+                                       .To("Name".As<string>(), "Quantity".As<int>(), "FavoriteFruit".As<Fruit>(), "Date".As<DateTime>(), "Time".As<TimeSpan>(), "DateTimeOffset".As<DateTimeOffset>(), "Id".As<Guid>(), "HourOfDay".As<HourOfDay>())
+                                       .ParseMultiLines<ObjectWithProperties>(Using.Properties);
+
+            var expected = new List<ObjectWithProperties>
+            {
+                new ObjectWithProperties
+                {
+                    Id = Guid.Parse("6579328A-B45A-48EB-BC1C-68018157F47A"),
+                    HourOfDay = new HourOfDay("3pm"),
+                    Time = TimeSpan.Parse("10:35:17"),
+                    DateTimeOffset = DateTimeOffset.Parse("2017-01-10T17:30:21-08:00"),
+                    FavoriteFruit = Fruit.Apple,
+                    Date = DateTime.Parse("2017/1/10"),
+                    Name = "Tom",
+                    Quantity = 2
+                },
+                new ObjectWithProperties
+                {
+                    Id = Guid.Parse("B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F"),
+                    HourOfDay = new HourOfDay("11am"),
+                    Time = TimeSpan.Parse("05:42:02"),
+                    DateTimeOffset = DateTimeOffset.Parse("2017-02-01T06:51:16-08:00"),
+                    FavoriteFruit = Fruit.Orange,
+                    Date = DateTime.Parse("2017/2/1"),
+                    Name = "Jerry",
+                    Quantity = 1
+                }
+            };
+
+            parseResult.Data.ShouldBeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void Additional_parameter_values_that_passed_to_with_method_are_added_to_the_parsed_values_for_properties()
+        {
+            const string @case = @"Given test data - Time: 10:35:17, DateTimeOffset: 2017-01-10T17:30:21-08:00, ID: 6579328A-B45A-48EB-BC1C-68018157F47A, Hour of day: 3pm
+And test data - Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F, Hour of day: 11am";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parseResult = gwtParser.WithPattern(@"Given test data - Time: (.*), DateTimeOffset: (.*), ID: (.*), Hour of day: ((?:[1][0-2]|[1-9])(?:am|pm))")
+                                       .To("Time".As<TimeSpan>(), "DateTimeOffset".As<DateTimeOffset>(), "Id".As<Guid>(), "HourOfDay".As<HourOfDay>())
+                                       .With("Name".Value("Tom"), "Quantity".Value(2), "FavoriteFruit".Value(Fruit.Apple), "Date".Value(DateTime.Parse("2017/1/10")))
+                                       .ParseMultiLines<ObjectWithProperties>(Using.Properties);
+
+            var expected = new List<ObjectWithProperties>
+            {
+                new ObjectWithProperties
+                {
+                    Id = Guid.Parse("6579328A-B45A-48EB-BC1C-68018157F47A"),
+                    HourOfDay = new HourOfDay("3pm"),
+                    Time = TimeSpan.Parse("10:35:17"),
+                    DateTimeOffset = DateTimeOffset.Parse("2017-01-10T17:30:21-08:00"),
+                    FavoriteFruit = Fruit.Apple,
+                    Date = DateTime.Parse("2017/1/10"),
+                    Name = "Tom",
+                    Quantity = 2
+                },
+                new ObjectWithProperties
+                {
+                    Id = Guid.Parse("B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F"),
+                    HourOfDay = new HourOfDay("11am"),
+                    Time = TimeSpan.Parse("05:42:02"),
+                    DateTimeOffset = DateTimeOffset.Parse("2017-02-01T06:51:16-08:00"),
+                    FavoriteFruit = Fruit.Apple,
+                    Date = DateTime.Parse("2017/1/10"),
+                    Name = "Tom",
+                    Quantity = 2
+                }
+            };
+
+            parseResult.Data.ShouldBeEquivalentTo(expected);
+        }
+
+        private class ObjectWithProperties
+        {
+            public Guid Id { get; set; }
+            public HourOfDay HourOfDay { get; set; }
+            public TimeSpan Time { get; set; }
+            public DateTimeOffset DateTimeOffset { get; set; }
+            public Fruit FavoriteFruit { get; set; }
+            public DateTime Date { get; set; }
+            public string Name { get; set; }
+            public int Quantity { get; set; }
+        }
+
         [TestCase("Given nullable integer: .", "")]
         [TestCase("Given nullable integer: 3.", "3")]
         public void ParseSingleLine_parses_the_match_to_nullable_type_correctly(string @case, string result)
