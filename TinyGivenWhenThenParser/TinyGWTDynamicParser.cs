@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TinyGivenWhenThenParser.StringConverters;
 
@@ -16,44 +17,60 @@ namespace TinyGivenWhenThenParser
             _additionalParameters = new List<KeyValuePair<string, object>>();
         }
 
-        public ParseResult<dynamic> ParseSingleLine(From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
+        public ParseResult<ParsedData<dynamic, IEnumerable<IEnumerable<string>>>, dynamic> ParseSingleLine(From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
         {
             var result = _parser.ParseSingleLine(testCase);
 
-            return new ParseResult<dynamic>(result.Parsed,
-                                            result.Data.Any() ? ParseFrom(result.Data, _parser.Properties) : null);
+            return new ParseResult<ParsedData<dynamic, IEnumerable<IEnumerable<string>>>, dynamic>(
+                result.Parsed,
+                new ParsedData<dynamic, IEnumerable<IEnumerable<string>>>(
+                    result.ParsedData == null
+                    ? null
+                    : result.ParsedData.Line != null && result.ParsedData.Line.Any()
+                            ? ParseFrom(result.ParsedData.Line, _parser.Properties)
+                            : null,
+                result.ParsedData.Table));
         }
 
-        public ParseResult<T> ParseSingleLine<T>(Using createObjectUsing, From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
+        public ParseResult<ParsedData<T, IEnumerable<IEnumerable<string>>>, T> ParseSingleLine<T>(Using createObjectUsing, From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
         {
             var result = ParseSingleLine(testCase);
 
-            IDictionary<string, object> data = Merge(result.Data, _additionalParameters);
+            IDictionary<string, object> data = Merge(result.ParsedData.Line, _additionalParameters);
 
-            return new ParseResult<T>(result.Parsed,
-                                      createObjectUsing == Using.Properties
-                                          ? data.ToCreate<T>()
-                                          : data.ToCostruct<T>());
+            return new ParseResult<ParsedData<T, IEnumerable<IEnumerable<string>>>, T>(
+                result.Parsed,
+                new ParsedData<T, IEnumerable<IEnumerable<string>>>(
+                    createObjectUsing == Using.Properties
+                    ? data.ToCreate<T>()
+                    : data.ToCostruct<T>(),
+                result.ParsedData.Table));
         }
 
-        public ParseResult<IEnumerable<dynamic>> ParseMultiLines(From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
+        public ParseResults<IEnumerable<ParsedData<dynamic, IEnumerable<IEnumerable<string>>>>, dynamic> ParseMultiLines(From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
         {
             var result = _parser.ParseMultiLines(testCase);
 
-            return new ParseResult<IEnumerable<dynamic>>(result.Parsed,
-                                            result.Data.Any()
-                                            ? result.Data.Select(d => d.Any() ? ParseFrom(d, _parser.Properties) : null)
-                                            : new List<dynamic>());
+            return new ParseResults<IEnumerable<ParsedData<dynamic, IEnumerable<IEnumerable<string>>>>, dynamic>(
+                result.Parsed,
+                result.ParsedData.Any()
+                    ? result.ParsedData.Select(d =>
+                        new ParsedData<dynamic, IEnumerable<IEnumerable<string>>>(
+                            d.Line.Any()
+                            ? ParseFrom(d.Line, _parser.Properties) : null, d.Table))
+                    : Enumerable.Empty<ParsedData<dynamic, IEnumerable<IEnumerable<string>>>>());
         }
 
-        public ParseResult<IEnumerable<T>> ParseMultiLines<T>(Using createObjectUsing, From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
+        public ParseResults<IEnumerable<ParsedData<T, IEnumerable<IEnumerable<string>>>>, T> ParseMultiLines<T>(Using createObjectUsing, From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
         {
             var result = ParseMultiLines(testCase);
 
-            return new ParseResult<IEnumerable<T>>(result.Parsed,
-                                            result.Parsed
-                                            ? result.Data.Select(d => (T)Create<T>(Merge(d, _additionalParameters), createObjectUsing))
-                                            : new List<T>());
+            return new ParseResults<IEnumerable<ParsedData<T, IEnumerable<IEnumerable<string>>>>, T>(
+                result.Parsed,
+                result.Parsed
+                    ? result.ParsedData.Select(d => new ParsedData<T, IEnumerable<IEnumerable<string>>> (
+                        (T)Create<T>(Merge(d.Line, _additionalParameters), createObjectUsing), d.Table))
+                    : Enumerable.Empty<ParsedData<T, IEnumerable<IEnumerable<string>>>>());
         }
 
         public TinyGWTDynamicParser With(params KeyValuePair<string, object>[] parameters)
