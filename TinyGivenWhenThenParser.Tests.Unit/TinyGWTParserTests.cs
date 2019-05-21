@@ -531,7 +531,7 @@ And test data - Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B
 
             var parseResult = gwtParser.WithPattern(@"Given test data - Time: (.*), DateTimeOffset: (.*), ID: (.*), Hour of day: ((?:[1][0-2]|[1-9])(?:am|pm))")
                                        .To("time".As<TimeSpan>(), "dateTimeOffset".As<DateTimeOffset>(), "id".As<Guid>(), "hourOfDay".As<HourOfDay>())
-                                       .With("name".Value("Tom"), "quantity".Value(2), "favoriteFruit".Value(Fruit.Apple), "date".Value(DateTime.Parse("2017/1/10")))
+                                       .WithAdditionalValuesOf("Tom".For("name"), 2.For("quantity"), Fruit.Apple.For("favoriteFruit"), DateTime.Parse("2017/1/10").For("date"))
                                        .ParseMultiLines<ObjectWithConstructor>(Using.Constructor);
 
             var expected = new List<ObjectWithConstructor> {
@@ -645,7 +645,7 @@ And test data - Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B
 
             var parseResult = gwtParser.WithPattern(@"Given test data - Time: (.*), DateTimeOffset: (.*), ID: (.*), Hour of day: ((?:[1][0-2]|[1-9])(?:am|pm))")
                                        .To("Time".As<TimeSpan>(), "DateTimeOffset".As<DateTimeOffset>(), "Id".As<Guid>(), "HourOfDay".As<HourOfDay>())
-                                       .With("Name".Value("Tom"), "Quantity".Value(2), "FavoriteFruit".Value(Fruit.Apple), "Date".Value(DateTime.Parse("2017/1/10")))
+                                       .WithAdditionalValuesOf("Tom".For("Name"), 2.For("Quantity"), Fruit.Apple.For("FavoriteFruit"), DateTime.Parse("2017/1/10").For("Date"))
                                        .ParseMultiLines<ObjectWithProperties>(Using.Properties);
 
             var expected = new List<ObjectWithProperties>

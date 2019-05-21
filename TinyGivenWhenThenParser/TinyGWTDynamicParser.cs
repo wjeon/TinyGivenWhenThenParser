@@ -73,7 +73,16 @@ namespace TinyGivenWhenThenParser
                     : Enumerable.Empty<ParsedData<T, IEnumerable<IEnumerable<string>>>>());
         }
 
+        [Obsolete]
         public TinyGWTDynamicParser With(params KeyValuePair<string, object>[] parameters)
+        {
+            if (parameters != null && parameters.Any())
+                _additionalParameters.AddRange(parameters);
+
+            return this;
+        }
+
+        public TinyGWTDynamicParser WithAdditionalValuesOf(params KeyValuePair<string, object>[] parameters)
         {
             if (parameters != null && parameters.Any())
                 _additionalParameters.AddRange(parameters);
