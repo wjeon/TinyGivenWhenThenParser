@@ -26,7 +26,7 @@ namespace TinyGivenWhenThenParser
             _testCaseLines = replacedCase
                 .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).Select(c => c.Trim());
 
-            _gwtLines = ToGwtLinesFrom(_testCaseLines);
+            _gwtLines = _testCaseLines.ToGwtLines();
         }
 
         public IList<Property> Properties { get; private set; }
@@ -160,27 +160,6 @@ namespace TinyGivenWhenThenParser
         {
             _pattern = string.Format("^{0}$", pattern.TrimStart('^').TrimEnd('$'));
             return this;
-        }
-
-        private static IEnumerable<string> ToGwtLinesFrom(IEnumerable<string> lines)
-        {
-            var gwtLines = new List<string>();
-            var prefix = string.Empty;
-            foreach (var line in lines)
-            {
-                if (line.StartsWith("Given ") || line.StartsWith("When ") || line.StartsWith("Then "))
-                {
-                    prefix = line.Substring(0, line.IndexOf(" "));
-                    gwtLines.Add(line);
-                }
-                else if (line.StartsWith("And "))
-                {
-                    gwtLines.Add(string.Format("!{0}", line).Replace("!And", prefix));
-                }
-                else
-                    throw new GwtParserException("Each line of the test case must start with 'Given', 'When', 'Then' or 'And'");
-            }
-            return gwtLines;
         }
 
         public TinyGWTDynamicParser To(params Property[] properties)
