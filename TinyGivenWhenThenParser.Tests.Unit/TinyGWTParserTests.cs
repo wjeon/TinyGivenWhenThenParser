@@ -313,6 +313,96 @@ And Jerry has 1 apple and 1 orange";
             parseResult.ParsedData.Line.Should().Be(new DateTime(2018, 8, 15, 10, 30, 0));
         }
 
+        [Test]
+        public void Parses_with_custom_table_in_single_line()
+        {
+            const string @case = @"Given following attendees
+                                   || name || team || title   ||
+                                   |  Tom   | 6     | TechLead |
+                                   |  Jerry | 2     | Manager  |";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+
+            var parseResult = gwtParser.WithPattern(@"^Given following attendees$")
+                                       .ParseSingleLine()
+                                       .WithTableOf<Attendee>();
+
+            parseResult.ParsedData.Should().Match<ParsedData<IList<string>, IEnumerable<Attendee>>>(d =>
+                d.Line.Count == 0 &&
+                d.Table.Count() == 2 &&
+                d.Table.ToList()[0].Name == "Tom" &&
+                d.Table.ToList()[0].Team == 6 &&
+                d.Table.ToList()[0].Title == Title.TechLead &&
+                d.Table.ToList()[1].Name == "Jerry" &&
+                d.Table.ToList()[1].Team == 2 &&
+                d.Table.ToList()[1].Title == Title.Manager);
+        }
+
+        [Test]
+        public void Parses_with_custom_table_in_multi_lines()
+        {
+            const string @case = @"Given the meeting is at 11:30 on 15th of August with following attendees
+                                   || name || team || title   ||
+                                   |  Tom   | 6     | TechLead |
+                                   |  Jerry | 2     | Manager  |
+                                   And another meeting is at 9:00 on 16th of August with following attendees
+                                   || name  || team || title    ||
+                                   |  Tom    | 6     | TechLead  |
+                                   |  Jerry  | 2     | Manager   |
+                                   |  Cuckoo | 7     | Developer |";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+
+            var parseResult = gwtParser.WithPattern(@"^Given (?:the|another) meeting is at (.*) on (\d+)(?:st|nd|rd|th) of (.*) with following attendees$")
+                                       .ParseMultiLines<DateTimeParser, DateTime>()
+                                       .WithTableOf<Attendee>();
+
+            parseResult.ParsedData.Should().Match<IEnumerable<ParsedData<DateTime, IEnumerable<Attendee>>>>(d =>
+                d.Count() == 2 &&
+                d.ToList()[0].Line == new DateTime(2018, 8, 15, 11, 30, 0) &&
+                d.ToList()[0].Table.Count() == 2 &&
+                d.ToList()[0].Table.ToList()[0].Name == "Tom" &&
+                d.ToList()[0].Table.ToList()[0].Team == 6 &&
+                d.ToList()[0].Table.ToList()[0].Title == Title.TechLead &&
+                d.ToList()[0].Table.ToList()[1].Name == "Jerry" &&
+                d.ToList()[0].Table.ToList()[1].Team == 2 &&
+                d.ToList()[0].Table.ToList()[1].Title == Title.Manager &&
+                d.ToList()[1].Line == new DateTime(2018, 8, 16, 9, 0, 0) &&
+                d.ToList()[1].Table.Count() == 3 &&
+                d.ToList()[1].Table.ToList()[0].Name == "Tom" &&
+                d.ToList()[1].Table.ToList()[0].Team == 6 &&
+                d.ToList()[1].Table.ToList()[0].Title == Title.TechLead &&
+                d.ToList()[1].Table.ToList()[1].Name == "Jerry" &&
+                d.ToList()[1].Table.ToList()[1].Team == 2 &&
+                d.ToList()[1].Table.ToList()[1].Title == Title.Manager &&
+                d.ToList()[1].Table.ToList()[2].Name == "Cuckoo" &&
+                d.ToList()[1].Table.ToList()[2].Team == 7 &&
+                d.ToList()[1].Table.ToList()[2].Title == Title.Developer);
+        }
+
+        private class Attendee
+        {
+            public Attendee(string name, int team, Title title)
+            {
+                Name = name;
+                Team = team;
+                Title = title;
+            }
+
+            public string Name { get; private set; }
+            public int Team { get; private set; }
+            public Title Title { get; private set; }
+        }
+
+        private enum Title
+        {
+            Developer,
+            TechLead,
+            Manager
+        }
+
         private class DateTimeParser : IParser<DateTime>
         {
             public DateTimeParser(TimeSpan time, int day, string monthName)
