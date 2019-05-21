@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using TinyGivenWhenThenParser.Exceptions;
 using TinyGivenWhenThenParser.Extensions;
+using TinyGivenWhenThenParser.Results;
 using TinyGivenWhenThenParser.StringConverters;
 
 namespace TinyGivenWhenThenParser

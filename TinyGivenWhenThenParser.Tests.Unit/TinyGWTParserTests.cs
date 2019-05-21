@@ -5,6 +5,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using TinyGivenWhenThenParser.Exceptions;
 using TinyGivenWhenThenParser.Extensions;
+using TinyGivenWhenThenParser.Results;
 
 namespace TinyGivenWhenThenParser.Tests.Unit
 {

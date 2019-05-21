@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace TinyGivenWhenThenParser
+namespace TinyGivenWhenThenParser.Results
 {
     public class ParseResults<TParsedData, TLine> : ParseResult<TParsedData, TLine>
     {

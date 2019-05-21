@@ -1,4 +1,4 @@
-﻿namespace TinyGivenWhenThenParser
+﻿namespace TinyGivenWhenThenParser.Results
 {
     public class ParsedData<TLine, TTable>
     {

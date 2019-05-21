@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TinyGivenWhenThenParser.StringConverters;
 
-namespace TinyGivenWhenThenParser
+namespace TinyGivenWhenThenParser.Results
 {
     public class ParseResult<TParsedData, TLine>
     {
