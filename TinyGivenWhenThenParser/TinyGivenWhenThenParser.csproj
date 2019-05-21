@@ -41,6 +41,8 @@
   <ItemGroup>
     <Compile Include="Exceptions\NoResolvableConstructorException.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Extensions\StringListExtensions.cs" />
+    <Compile Include="Extensions\StringTableExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="From.cs" />
     <Compile Include="Exceptions\GwtParserException.cs" />
