@@ -25,12 +25,10 @@ namespace TinyGivenWhenThenParser.Tests.Unit
 
             var expectedResult = new ParseResult<ParsedData<string[], IEnumerable<IEnumerable<string>>>, string[]>(
                 parsed,
-                string.IsNullOrEmpty(parsedData)
-                    ? null
-                    : new ParsedData<string[], IEnumerable<IEnumerable<string>>>(parsedData.Split(','),
-                string.IsNullOrEmpty(parsedData)
-                    ? null
-                    : Enumerable.Empty<IEnumerable<string>>()));
+                new ParsedData<string[], IEnumerable<IEnumerable<string>>>(
+                    string.IsNullOrEmpty(parsedData) ? new string[] { } : parsedData.Split(','),
+                    Enumerable.Empty<IEnumerable<string>>()
+                ));
 
             parseResult.ShouldBeEquivalentTo(expectedResult);
         }
@@ -48,12 +46,10 @@ namespace TinyGivenWhenThenParser.Tests.Unit
 
             var expectedResult = new ParseResult<ParsedData<string[], IEnumerable<IEnumerable<string>>>, string[]>(
                 parsed,
-                string.IsNullOrEmpty(parsedData)
-                    ? null
-                    : new ParsedData<string[], IEnumerable<IEnumerable<string>>>(parsedData.Split(','),
-                string.IsNullOrEmpty(parsedData)
-                    ? null
-                    : Enumerable.Empty<IEnumerable<string>>()));
+                new ParsedData<string[], IEnumerable<IEnumerable<string>>>(
+                    string.IsNullOrEmpty(parsedData) ? new string[] { } : parsedData.Split(','),
+                    Enumerable.Empty<IEnumerable<string>>()
+                ));
 
             parseResult.ShouldBeEquivalentTo(expectedResult);
         }
@@ -73,12 +69,10 @@ Then Jerry has 1 apple", true, "Jerry,1, apple,,")]
 
             var expectedResult = new ParseResult<ParsedData<string[], IEnumerable<IEnumerable<string>>>, string[]>(
                 parsed,
-                string.IsNullOrEmpty(parsedData)
-                    ? null
-                    : new ParsedData<string[], IEnumerable<IEnumerable<string>>>(parsedData.Split(','),
-                string.IsNullOrEmpty(parsedData)
-                    ? null
-                    : Enumerable.Empty<IEnumerable<string>>()));
+                new ParsedData<string[], IEnumerable<IEnumerable<string>>>(
+                    string.IsNullOrEmpty(parsedData) ? new string[] { } : parsedData.Split(','),
+                    Enumerable.Empty<IEnumerable<string>>()
+                ));
 
             parseResult.ShouldBeEquivalentTo(expectedResult);
         }
@@ -804,6 +798,63 @@ And nullable integer: 3.";
             };
 
             ((object)parseResult.ParsedData.Line).ShouldBeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void Dynamic_parser_does_not_throw_when_there_are_no_matching_lines()
+        {
+            const string @case = "Given something..";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parser = gwtParser.WithPattern(@"^Given there are (\d+) cats$")
+                                  .To("Cats".As<int>())
+                                  .WithAdditionalValuesOf(Fruit.Apple.For("favoriteFruit"));
+
+            Assert.DoesNotThrow(() =>
+            {
+                var singleLine = parser.ParseSingleLine().ParsedData.Line.Cats;
+                var singleTable = parser.ParseSingleLine().ParsedData.Table.ToList();
+                var multiLines = parser.ParseMultiLines().ParsedData.Select(d => d.Line.Cats).ToList();
+                var multiTables = parser.ParseMultiLines().ParsedData.Select(d => d.Table.ToList()).ToList();
+            });
+        }
+
+        [Test]
+        public void Parsing_with_custom_parser_class_does_not_throw_when_there_are_no_matching_lines()
+        {
+            const string @case = "Given something..";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parser = gwtParser.WithPattern(@"^Given the meeting is at (.*) on (\d+)(?:st|nd|rd|th) of (.*)$");
+
+            Assert.DoesNotThrow(() =>
+            {
+                var singleLine = parser.ParseSingleLine<DateTimeParser, DateTime>().ParsedData.Line.ToUniversalTime();
+                var singleTable = parser.ParseSingleLine<DateTimeParser, DateTime>().ParsedData.Table.Select(t => t.ToList()).ToList();
+                var multiLines = parser.ParseMultiLines<DateTimeParser, DateTime>().ParsedData.Select(d => d.Line.ToUniversalTime()).ToList();
+                var multiTables = parser.ParseMultiLines<DateTimeParser, DateTime>().ParsedData.Select(d => d.Table.Select(t => t.ToList()).ToList()).ToList();
+            });
+        }
+
+        [Test]
+        public void Parsing_with_custom_table_class_does_not_throw_when_there_are_no_matching_lines()
+        {
+            const string @case = @"Given something..";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+
+            var parser = gwtParser.WithPattern(@"^Given following attendees$");
+
+            Assert.DoesNotThrow(() =>
+            {
+                var singleLine = parser.ParseSingleLine().WithTableOf<Attendee>().ParsedData.Line.Select(l => l).ToList();
+                var singleTable = parser.ParseSingleLine().WithTableOf<Attendee>().ParsedData.Table.Select(t => t.Name).ToList();
+                var multiLines = parser.ParseMultiLines().WithTableOf<Attendee>().ParsedData.Select(d => d.Line.Select(l => l).ToList()).ToList();
+                var multiTables = parser.ParseMultiLines().WithTableOf<Attendee>().ParsedData.Select(d => d.Table.Select(t => t.Name).ToList()).ToList();
+            });
         }
 
         private enum Fruit

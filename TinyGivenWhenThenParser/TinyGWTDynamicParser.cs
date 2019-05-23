@@ -25,12 +25,10 @@ namespace TinyGivenWhenThenParser
             return new ParseResult<ParsedData<dynamic, IEnumerable<IEnumerable<string>>>, dynamic>(
                 result.Parsed,
                 new ParsedData<dynamic, IEnumerable<IEnumerable<string>>>(
-                    result.ParsedData == null
-                    ? null
-                    : result.ParsedData.Line != null && result.ParsedData.Line.Any()
+                    result.ParsedData?.Line != null && result.ParsedData.Line.Any()
                             ? ParseFrom(result.ParsedData.Line, _parser.Properties)
-                            : null,
-                result.ParsedData.Table));
+                            : EmptyDynamicObjectOf(_parser.Properties),
+                result.ParsedData?.Table));
         }
 
         public ParseResult<ParsedData<T, IEnumerable<IEnumerable<string>>>, T> ParseSingleLine<T>(Using createObjectUsing, From testCase = From.TestCaseReplacedAndWithGivenWhenThen)

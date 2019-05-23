@@ -40,7 +40,7 @@ namespace TinyGivenWhenThenParser
                 result.Parsed,
                 result.ParsedData != null && result.ParsedData.Any()
                     ? result.ParsedData.First()
-                    : default(ParsedData<IList<string>, IEnumerable<IEnumerable<string>>>));
+                    : new ParsedData<IList<string>, IEnumerable<IEnumerable<string>>>(Enumerable.Empty<string>().ToList(), Enumerable.Empty<IEnumerable<string>>()));
         }
 
         public ParseResults<IEnumerable<ParsedData<IList<string>, IEnumerable<IEnumerable<string>>>>, IList<string>> ParseMultiLines(From testCase = From.TestCaseReplacedAndWithGivenWhenThen)
@@ -92,7 +92,7 @@ namespace TinyGivenWhenThenParser
             return new ParseResult<ParsedData<TReturn, IEnumerable<IEnumerable<string>>>, TReturn>(
                 result.Parsed,
                 result.ParsedData == null
-                    ? null
+                    ? new ParsedData<TReturn, IEnumerable<IEnumerable<string>>>(default(TReturn), Enumerable.Empty<IEnumerable<string>>())
                     : new ParsedData<TReturn, IEnumerable<IEnumerable<string>>>(result.ParsedData.Line.Value, result.ParsedData.Table));
         }
 

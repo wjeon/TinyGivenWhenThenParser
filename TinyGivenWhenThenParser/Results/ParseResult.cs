@@ -49,9 +49,13 @@ namespace TinyGivenWhenThenParser.Results
 
         protected static ParsedData<TLine, IEnumerable<TTable>> ParsedDataWithConvertedTable<TTable>(ParsedData<TLine, IEnumerable<IEnumerable<string>>> parsedData)
         {
-            return new ParsedData<TLine, IEnumerable<TTable>>(
-                parsedData.Line,
-                parsedData.Table.Select(row => row.ToList().ToCostruct<TTable>()));
+            return parsedData == null
+                ? new ParsedData<TLine, IEnumerable<TTable>>(
+                    default(TLine),
+                    Enumerable.Empty<TTable>())
+                : new ParsedData<TLine, IEnumerable<TTable>>(
+                    parsedData.Line,
+                    parsedData.Table.Select(row => row.ToList().ToCostruct<TTable>()));
         }
     }
 }
