@@ -58,7 +58,7 @@ namespace TinyGivenWhenThenParser
                     ? result.ParsedData.Select(d =>
                         new ParsedData<dynamic, IEnumerable<IEnumerable<string>>>(
                             d.Line.Any()
-                            ? ParseFrom(d.Line, _parser.Properties) : null, d.Table))
+                            ? ParseFrom(d.Line, _parser.Properties) : EmptyDynamicObjectOf(_parser.Properties), d.Table))
                     : Enumerable.Empty<ParsedData<dynamic, IEnumerable<IEnumerable<string>>>>());
         }
 
@@ -111,6 +111,19 @@ namespace TinyGivenWhenThenParser
             {
                 ((IDictionary<string, object>)obj)
                     .Add(properties[i].Name, data[i].ConvertTo(properties[i].Type));
+            }
+
+            return obj;
+        }
+
+        private static dynamic EmptyDynamicObjectOf(IList<Property> properties)
+        {
+            dynamic obj = new System.Dynamic.ExpandoObject();
+
+            foreach (var t in properties)
+            {
+                ((IDictionary<string, object>)obj)
+                    .Add(t.Name, t.Type.IsValueType ? Activator.CreateInstance(t.Type) : null);
             }
 
             return obj;

@@ -780,6 +780,32 @@ And nullable integer: 3.";
             }
         }
 
+        [Test]
+        public void Dynamic_parser_sets_dynamic_properties_with_default_value_when_there_are_no_matching_lines()
+        {
+            const string @case = @"Given something..";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parseResult = gwtParser.WithPattern(@"Given test data - Name: (.*), Age: (\d+), Favorite Fruit: (apple|orange), Date: (.*), Time: (.*), DateTimeOffset: (.*), ID: (.*), Hour of day: ((?:[1][0-2]|[1-9])(?:am|pm))")
+                                       .To("Name".As<string>(), "Quantity".As<int>(), "FavoriteFruit".As<Fruit>(), "Date".As<DateTime>(), "Time".As<TimeSpan>(), "DateTimeOffset".As<DateTimeOffset>(), "Id".As<Guid>(), "HourOfDay".As<HourOfDay>())
+                                       .ParseSingleLine();
+
+            var expected = new Dictionary<string, object>
+            {
+                { "Name", default(string) },
+                { "Quantity", default(int) },
+                { "FavoriteFruit", default(Fruit) },
+                { "Date", default(DateTime) },
+                { "Time", default(TimeSpan) },
+                { "DateTimeOffset", default(DateTimeOffset) },
+                { "Id", default(Guid) },
+                {"HourOfDay", default(HourOfDay) }
+            };
+
+            ((object)parseResult.ParsedData.Line).ShouldBeEquivalentTo(expected);
+        }
+
         private enum Fruit
         {
             Apple,
