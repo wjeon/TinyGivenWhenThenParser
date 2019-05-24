@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TinyGivenWhenThenParser.Extensions;
 using TinyGivenWhenThenParser.StringConverters;
 
 namespace TinyGivenWhenThenParser.Results
@@ -55,7 +56,7 @@ namespace TinyGivenWhenThenParser.Results
                     Enumerable.Empty<TTable>())
                 : new ParsedData<TLine, IEnumerable<TTable>>(
                     parsedData.Line,
-                    parsedData.Table.Select(row => row.ToList().ToCostruct<TTable>()));
+                    parsedData.Table.GetRowsOnlyWithNoHeaders().Select(row => row.ToList().ToCostruct<TTable>()));
         }
     }
 }

@@ -9,11 +9,9 @@ namespace TinyGivenWhenThenParser.Extensions
         {
             var table = tableSource.Select(c => c.Replace("||", "|").Trim('|').Split('|').Select(v => v.Trim())).ToList();
 
-            var flippedTable = tableSource.First().Trim().EndsWith("||")
+            return tableSource.First().Trim().EndsWith("||")
                 ? table
                 : table.FlipVerticalTableToHorizontal();
-
-            return flippedTable.GetRowsOnlyWithNoHeaders();
         }
 
         private static IEnumerable<IEnumerable<string>> FlipVerticalTableToHorizontal(this IEnumerable<IEnumerable<string>> table)
@@ -38,9 +36,9 @@ namespace TinyGivenWhenThenParser.Extensions
             return flippedTable;
         }
 
-        private static IEnumerable<IEnumerable<string>> GetRowsOnlyWithNoHeaders(this IEnumerable<IEnumerable<string>> table)
+        public static IEnumerable<IEnumerable<string>> GetRowsOnlyWithNoHeaders(this IEnumerable<IEnumerable<string>> table)
         {
-            return table.ToList().GetRange(1, table.Count() - 1);
+            return table.Any() ? table.ToList().GetRange(1, table.Count() - 1) : table;
         }
     }
 }

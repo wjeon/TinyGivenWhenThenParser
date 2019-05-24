@@ -309,7 +309,7 @@ And Jerry has 1 apple and 1 orange";
         }
 
         [Test]
-        public void Parses_with_custom_table_in_single_line()
+        public void Parses_table_with_custom_type_in_single_line()
         {
             const string @case = @"Given following attendees
                                    || name || team || title   ||
@@ -335,7 +335,35 @@ And Jerry has 1 apple and 1 orange";
         }
 
         [Test]
-        public void Parses_with_custom_table_in_multi_lines()
+        public void Parsing_table_with_no_custom_type_includes_headers()
+        {
+            const string @case = @"Given following attendees
+                                   || name || team || title   ||
+                                   |  Tom   | 6     | TechLead |
+                                   |  Jerry | 2     | Manager  |";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+
+            var parseResult = gwtParser.WithPattern(@"^Given following attendees$")
+                                       .ParseSingleLine();
+
+            parseResult.ParsedData.Should().Match<ParsedData<IList<string>, IEnumerable<IEnumerable<string>>>>(d =>
+                d.Line.Count == 0 &&
+                d.Table.Count() == 3 &&
+                d.Table.ToList()[0].ToList()[0] == "name" &&
+                d.Table.ToList()[0].ToList()[1] == "team" &&
+                d.Table.ToList()[0].ToList()[2] == "title" &&
+                d.Table.ToList()[1].ToList()[0] == "Tom" &&
+                d.Table.ToList()[1].ToList()[1] == "6" &&
+                d.Table.ToList()[1].ToList()[2] == "TechLead" &&
+                d.Table.ToList()[2].ToList()[0] == "Jerry" &&
+                d.Table.ToList()[2].ToList()[1] == "2" &&
+                d.Table.ToList()[2].ToList()[2] == "Manager");
+        }
+
+        [Test]
+        public void Parses_table_with_custom_type_in_multi_lines()
         {
             const string @case = @"Given the meeting is at 11:30 on 15th of August with following attendees
                                    || name || team || title   ||
