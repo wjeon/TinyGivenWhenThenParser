@@ -335,6 +335,28 @@ And Jerry has 1 apple and 1 orange";
         }
 
         [Test]
+        public void Parses_table_with_custom_parser_class_in_single_line()
+        {
+            const string @case = @"Given following schedule for Tom's meetings
+                                   || time || day || month ||
+                                   |  10:30 | 15   | May    |
+                                   |  9:00  | 3    | August |";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+
+            var parseResult = gwtParser.WithPattern(@"^Given following schedule for (?:Tom|Jerry)'s meetings$")
+                                       .ParseSingleLine()
+                                       .WithTableOf<DateTimeParser, DateTime>();
+
+            parseResult.ParsedData.Should().Match<ParsedData<IList<string>, IEnumerable<DateTime>>>(d =>
+                d.Line.Count == 0 &&
+                d.Table.Count() == 2 &&
+                d.Table.ToList()[0] == new DateTime(2018, 5, 15, 10, 30, 0) &&
+                d.Table.ToList()[1] == new DateTime(2018, 8, 3, 9, 0, 0));
+        }
+
+        [Test]
         public void Parsing_table_with_no_custom_type_includes_headers()
         {
             const string @case = @"Given following attendees
@@ -403,6 +425,35 @@ And Jerry has 1 apple and 1 orange";
                 d.ToList()[1].Table.ToList()[2].Name == "Cuckoo" &&
                 d.ToList()[1].Table.ToList()[2].Team == 7 &&
                 d.ToList()[1].Table.ToList()[2].Title == Title.Developer);
+        }
+
+        [Test]
+        public void Parses_table_with_custom_parser_class_in_multi_lines()
+        {
+            const string @case = @"Given following schedule for Tom's meetings
+                                   || time || day || month ||
+                                   |  10:30 | 15   | May    |
+                                   |  9:00  | 3    | August |
+                                   And following schedule for Jerry's meetings
+                                   || time || day || month ||
+                                   |  10:30 | 15   | May    |
+                                   |  8:30  | 25   | June   |";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+
+            var parseResult = gwtParser.WithPattern(@"^Given following schedule for (?:Tom|Jerry)'s meetings$")
+                                       .ParseMultiLines()
+                                       .WithTableOf<DateTimeParser, DateTime>();
+
+            parseResult.ParsedData.Should().Match<IEnumerable<ParsedData<IList<string>, IEnumerable<DateTime>>>>(d =>
+                d.Count() == 2 &&
+                d.ToList()[0].Table.Count() == 2 &&
+                d.ToList()[0].Table.ToList()[0] == new DateTime(2018, 5, 15, 10, 30, 0) &&
+                d.ToList()[0].Table.ToList()[1] == new DateTime(2018, 8, 3, 9, 0, 0) &&
+                d.ToList()[1].Table.Count() == 2 &&
+                d.ToList()[1].Table.ToList()[0] == new DateTime(2018, 5, 15, 10, 30, 0) &&
+                d.ToList()[1].Table.ToList()[1] == new DateTime(2018, 6, 25, 8, 30, 0));
         }
 
         private class Attendee

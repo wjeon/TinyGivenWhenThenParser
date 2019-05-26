@@ -19,6 +19,16 @@ namespace TinyGivenWhenThenParser.Results
 
         public ParseResult<ParsedData<TLine, IEnumerable<TTable>>, TLine> WithTableOf<TTable>()
         {
+            return ResultWithCustomTable(r => r.ToList().ToCostruct<TTable>());
+        }
+
+        public ParseResult<ParsedData<TLine, IEnumerable<TTable>>, TLine> WithTableOf<TParser, TTable>() where TParser : IParser<TTable>
+        {
+            return ResultWithCustomTable(r => r.ToList().ToCostruct<TParser>().Value);
+        }
+
+        private ParseResult<ParsedData<TLine, IEnumerable<TTable>>, TLine> ResultWithCustomTable<TTable>(Func<IEnumerable<string>, TTable> construct)
+        {
             if (typeof(TParsedData) == typeof(ParsedData<TLine, IEnumerable<TTable>>))
             {
                 PrintTableIsAlreadyRequestedType();
@@ -33,7 +43,7 @@ namespace TinyGivenWhenThenParser.Results
 
             var parsedData = ParsedData as ParsedData<TLine, IEnumerable<IEnumerable<string>>>;
 
-            var parsedDataWithConvertedTable = ParsedDataWithConvertedTable<TTable>(parsedData);
+            var parsedDataWithConvertedTable = ParsedDataWithConvertedTable(parsedData, construct);
 
             return new ParseResult<ParsedData<TLine, IEnumerable<TTable>>, TLine>(Parsed, parsedDataWithConvertedTable);
         }
@@ -48,7 +58,8 @@ namespace TinyGivenWhenThenParser.Results
             Console.WriteLine("The table shouldn't need to be converted to string list rows");
         }
 
-        protected static ParsedData<TLine, IEnumerable<TTable>> ParsedDataWithConvertedTable<TTable>(ParsedData<TLine, IEnumerable<IEnumerable<string>>> parsedData)
+        protected static ParsedData<TLine, IEnumerable<TTable>> ParsedDataWithConvertedTable<TTable>(
+            ParsedData<TLine, IEnumerable<IEnumerable<string>>> parsedData, Func<IEnumerable<string>, TTable> construct)
         {
             return parsedData == null
                 ? new ParsedData<TLine, IEnumerable<TTable>>(
@@ -56,7 +67,7 @@ namespace TinyGivenWhenThenParser.Results
                     Enumerable.Empty<TTable>())
                 : new ParsedData<TLine, IEnumerable<TTable>>(
                     parsedData.Line,
-                    parsedData.Table.GetRowsOnlyWithNoHeaders().Select(row => row.ToList().ToCostruct<TTable>()));
+                    parsedData.Table.GetRowsOnlyWithNoHeaders().Select(construct));
         }
     }
 }
