@@ -5,6 +5,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using TinyGivenWhenThenParser.Exceptions;
 using TinyGivenWhenThenParser.Extensions;
+using TinyGivenWhenThenParser.Results;
 
 namespace TinyGivenWhenThenParser.Tests.Unit
 {
@@ -22,8 +23,12 @@ namespace TinyGivenWhenThenParser.Tests.Unit
             var parseResult = gwtParser.WithPattern(@"^Given (.*) has (\d+) apple(?:s|) and (\d+) orange(?:s|)$")
                 .ParseSingleLine();
 
-            var expectedResult = new ParseResult<string[]>(parsed,
-                string.IsNullOrEmpty(parsedData) ? new string[0] : parsedData.Split(','));
+            var expectedResult = new ParseResult<ParsedData<string[], IEnumerable<IEnumerable<string>>>, string[]>(
+                parsed,
+                new ParsedData<string[], IEnumerable<IEnumerable<string>>>(
+                    string.IsNullOrEmpty(parsedData) ? new string[] { } : parsedData.Split(','),
+                    Enumerable.Empty<IEnumerable<string>>()
+                ));
 
             parseResult.ShouldBeEquivalentTo(expectedResult);
         }
@@ -39,8 +44,12 @@ namespace TinyGivenWhenThenParser.Tests.Unit
             var parseResult = gwtParser.WithPattern(@"When (.*) eats (|\d+)( apple|)(?:s|)(?:| and )(|\d+)( orange|)(?:s|)")
                 .ParseSingleLine();
 
-            var expectedResult = new ParseResult<string[]>(parsed,
-                string.IsNullOrEmpty(parsedData) ? new string[0] : parsedData.Split(','));
+            var expectedResult = new ParseResult<ParsedData<string[], IEnumerable<IEnumerable<string>>>, string[]>(
+                parsed,
+                new ParsedData<string[], IEnumerable<IEnumerable<string>>>(
+                    string.IsNullOrEmpty(parsedData) ? new string[] { } : parsedData.Split(','),
+                    Enumerable.Empty<IEnumerable<string>>()
+                ));
 
             parseResult.ShouldBeEquivalentTo(expectedResult);
         }
@@ -58,8 +67,12 @@ Then Jerry has 1 apple", true, "Jerry,1, apple,,")]
             var parseResult = gwtParser.WithPattern(@"^Then (.*) has (|\d+)( apple|)(?:s|)(?:| and )(|\d+)( orange|)(?:s|)")
                 .ParseSingleLine();
 
-            var expectedResult = new ParseResult<string[]>(parsed,
-                string.IsNullOrEmpty(parsedData) ? new string[0] : parsedData.Split(','));
+            var expectedResult = new ParseResult<ParsedData<string[], IEnumerable<IEnumerable<string>>>, string[]>(
+                parsed,
+                new ParsedData<string[], IEnumerable<IEnumerable<string>>>(
+                    string.IsNullOrEmpty(parsedData) ? new string[] { } : parsedData.Split(','),
+                    Enumerable.Empty<IEnumerable<string>>()
+                ));
 
             parseResult.ShouldBeEquivalentTo(expectedResult);
         }
@@ -76,7 +89,8 @@ Given Jerry has 1 orange";
             var parseResult = gwtParser.WithPattern(@"Given (.*) has (\d+) (apple|orange)(?:s|)")
                 .ParseSingleLine();
 
-            var expectedResult = new ParseResult<string[]>(true, new[] { "Tom", "3", "apple" });
+            var expectedResult = new ParseResult<ParsedData<string[], IEnumerable<IEnumerable<string>>>, string[]>(
+                true, new ParsedData<string[], IEnumerable<IEnumerable<string>>>(new[] { "Tom", "3", "apple" }, Enumerable.Empty<IEnumerable<string>>()));
 
             parseResult.ShouldBeEquivalentTo(expectedResult);
         }
@@ -93,10 +107,12 @@ Given Jerry has 1 orange";
             var parseResult = gwtParser.WithPattern(@"Given (.*) has (\d+) (apple|orange)(?:s|)")
                 .ParseMultiLines();
 
-            var expectedResult = new ParseResult<string[][]>(true, new[]
+            var expectedResult = new ParseResult<IEnumerable<ParsedData<string[], IEnumerable<IEnumerable<string>>>>, string[][]>(
+                true,
+                new List<ParsedData<string[], IEnumerable<IEnumerable<string>>>>
                 {
-                    new[] { "Tom", "3", "apple" },
-                    new[] { "Jerry", "1", "orange" }
+                    new ParsedData<string[], IEnumerable<IEnumerable<string>>>(new[] { "Tom", "3", "apple" }, Enumerable.Empty<IEnumerable<string>>()),
+                    new ParsedData<string[], IEnumerable<IEnumerable<string>>>(new[] { "Jerry", "1", "orange" }, Enumerable.Empty<IEnumerable<string>>())
                 });
 
             parseResult.ShouldBeEquivalentTo(expectedResult);
@@ -113,10 +129,12 @@ And Jerry has 1 apple and 1 orange";
             var parseResult = gwtParser.WithPattern(@"Given (.*) has (\d+) apple(?:s|) and (\d+) orange(?:s|)")
                 .ParseMultiLines(From.TestCaseReplacedAndWithGivenWhenThen);
 
-            var expectedResult = new ParseResult<string[][]>(true, new[]
+            var expectedResult = new ParseResult<IEnumerable<ParsedData<string[], IEnumerable<IEnumerable<string>>>>, string[][]>(
+                true,
+                new List<ParsedData<string[], IEnumerable<IEnumerable<string>>>>
                 {
-                    new[] { "Tom", "2", "3" },
-                    new[] { "Jerry", "1", "1" }
+                    new ParsedData<string[], IEnumerable<IEnumerable<string>>>(new[] { "Tom", "2", "3" }, Enumerable.Empty<IEnumerable<string>>()),
+                    new ParsedData<string[], IEnumerable<IEnumerable<string>>>(new[] { "Jerry", "1", "1" }, Enumerable.Empty<IEnumerable<string>>())
                 });
 
             parseResult.ShouldBeEquivalentTo(expectedResult);
@@ -133,10 +151,12 @@ And Jerry eats 1 orange";
             var parseResult = gwtParser.WithPattern(@"When (.*) eats (|\d+)( apple|)(?:s|)(?:| and )(|\d+)( orange|)(?:s|)")
                 .ParseMultiLines();
 
-            var expectedResult = new ParseResult<string[][]>(true, new[]
+            var expectedResult = new ParseResult<IEnumerable<ParsedData<string[], IEnumerable<IEnumerable<string>>>>, string[][]>(
+                true,
+                new List<ParsedData<string[], IEnumerable<IEnumerable<string>>>>
                 {
-                    new[] { "Tom", "1", " apple", "2", " orange" },
-                    new[] { "Jerry", "", "","1", " orange" }
+                    new ParsedData<string[], IEnumerable<IEnumerable<string>>>(new[] { "Tom", "1", " apple", "2", " orange" }, Enumerable.Empty<IEnumerable<string>>()),
+                    new ParsedData<string[], IEnumerable<IEnumerable<string>>>(new[] { "Jerry", "", "","1", " orange" }, Enumerable.Empty<IEnumerable<string>>())
                 });
 
             parseResult.ShouldBeEquivalentTo(expectedResult);
@@ -154,10 +174,12 @@ And Jerry has 1 apple";
             var parseResult = gwtParser.WithPattern(@"Then (.*) has (|\d+)( apple|)(?:s|)(?:| and )(|\d+)( orange|)(?:s|)")
                 .ParseMultiLines();
 
-            var expectedResult = new ParseResult<string[][]>(true, new[]
+            var expectedResult = new ParseResult<IEnumerable<ParsedData<string[], IEnumerable<IEnumerable<string>>>>, string[][]>(
+                true,
+                new List<ParsedData<string[], IEnumerable<IEnumerable<string>>>>
                 {
-                    new[] { "Tom", "1", " apple", "1", " orange" },
-                    new[] { "Jerry", "1", " apple", "", "" }
+                    new ParsedData<string[], IEnumerable<IEnumerable<string>>>(new[] { "Tom", "1", " apple", "1", " orange" }, Enumerable.Empty<IEnumerable<string>>()),
+                    new ParsedData<string[], IEnumerable<IEnumerable<string>>>(new[] { "Jerry", "1", " apple", "", "" }, Enumerable.Empty<IEnumerable<string>>())
                 });
 
             parseResult.ShouldBeEquivalentTo(expectedResult);
@@ -181,12 +203,17 @@ And Jerry has 1 apple", @"And (.*) has (|\d+)( apple|)(?:s|)(?:| and )(|\d+)( or
             var singleLineParseResult = gwtParser.WithPattern(pattern)
                 .ParseSingleLine(From.OriginalTestCase);
 
-            singleLineParseResult.ShouldBeEquivalentTo(new ParseResult<string[]>(true, parsedData.Split(',')));
+            singleLineParseResult.ShouldBeEquivalentTo(new ParseResult<ParsedData<string[], IEnumerable<IEnumerable<string>>>, string[]>(
+                true, new ParsedData<string[], IEnumerable<IEnumerable<string>>>(parsedData.Split(','), Enumerable.Empty<IEnumerable<string>>())));
 
             var multiLineParseResult = gwtParser.WithPattern(pattern)
                 .ParseMultiLines(From.OriginalTestCase);
 
-            multiLineParseResult.ShouldBeEquivalentTo(new ParseResult<string[][]>(true, new[] {parsedData.Split(',')}));
+            multiLineParseResult.ShouldBeEquivalentTo(new ParseResult<IEnumerable<ParsedData<string[], IEnumerable<IEnumerable<string>>>>, string[][]>(
+                true, new List<ParsedData<string[], IEnumerable<IEnumerable<string>>>>
+                {
+                    new ParsedData<string[], IEnumerable<IEnumerable<string>>>(parsedData.Split(','), Enumerable.Empty<IEnumerable<string>>())
+                }));
         }
 
         [TestCase(@"Case #1: Given Tom has 2 apples and 3 oranges
@@ -229,7 +256,7 @@ Also Jerry has 1 apple and 1 orange";
                 }
             };
 
-            parseResult.Data.ShouldBeEquivalentTo(expectedResult);
+            parseResult.ParsedData.Line.ShouldBeEquivalentTo(expectedResult);
         }
 
         [Test]
@@ -264,7 +291,7 @@ And Jerry has 1 apple and 1 orange";
                 }
             };
 
-            parseResult.Data.ShouldBeEquivalentTo(expectedResult);
+            parseResult.ParsedData.Select(d => d.Line).ShouldBeEquivalentTo(expectedResult);
         }
 
         [Test]
@@ -278,7 +305,225 @@ And Jerry has 1 apple and 1 orange";
             var parseResult = gwtParser.WithPattern(@"^Given the meeting is at (.*) on (\d+)(?:st|nd|rd|th) of (.*)$")
                                        .ParseSingleLine<DateTimeParser, DateTime>();
 
-            parseResult.Data.Should().Be(new DateTime(2018, 8, 15, 10, 30, 0));
+            parseResult.ParsedData.Line.Should().Be(new DateTime(2018, 8, 15, 10, 30, 0));
+        }
+
+        [Test]
+        public void Parses_table_with_custom_type_in_single_line()
+        {
+            const string @case = @"Given following attendees
+                                   +-------+------+----------+
+                                   | name  | team | title    |
+                                   +-------+------+----------+
+                                   | Tom   | 6    | TechLead |
+                                   | Jerry | 2    | Manager  |
+                                   +-------+------+----------+";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+
+            var parseResult = gwtParser.WithPattern(@"^Given following attendees$")
+                                       .ParseSingleLine()
+                                       .WithTableOf<Attendee>();
+
+            parseResult.ParsedData.Should().Match<ParsedData<IList<string>, IEnumerable<Attendee>>>(d =>
+                d.Line.Count == 0 &&
+                d.Table.Count() == 2 &&
+                d.Table.ToList()[0].Name == "Tom" &&
+                d.Table.ToList()[0].Team == 6 &&
+                d.Table.ToList()[0].Title == Title.TechLead &&
+                d.Table.ToList()[1].Name == "Jerry" &&
+                d.Table.ToList()[1].Team == 2 &&
+                d.Table.ToList()[1].Title == Title.Manager);
+        }
+
+        [Test]
+        public void Flips_and_parses_table_when_the_table_is_vertical()
+        {
+            const string @case = @"Given following attendees
+                                   ++-------++----------+---------+
+                                   || name  || Tom      | Jerry   |
+                                   || team  || 6        | 2       |
+                                   || title || TechLead | Manager |
+                                   ++-------++----------+---------+";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+
+            var parseResult = gwtParser.WithPattern(@"^Given following attendees$")
+                                       .ParseSingleLine()
+                                       .WithTableOf<Attendee>();
+
+            parseResult.ParsedData.Should().Match<ParsedData<IList<string>, IEnumerable<Attendee>>>(d =>
+                d.Line.Count == 0 &&
+                d.Table.Count() == 2 &&
+                d.Table.ToList()[0].Name == "Tom" &&
+                d.Table.ToList()[0].Team == 6 &&
+                d.Table.ToList()[0].Title == Title.TechLead &&
+                d.Table.ToList()[1].Name == "Jerry" &&
+                d.Table.ToList()[1].Team == 2 &&
+                d.Table.ToList()[1].Title == Title.Manager);
+        }
+
+        [Test]
+        public void Parses_table_with_custom_parser_class_in_single_line()
+        {
+            const string @case = @"Given following schedule for Tom's meetings
+                                   +-------+-----+--------+
+                                   | time  | day | month  |
+                                   +-------+-----+--------+
+                                   | 10:30 | 15  | May    |
+                                   | 9:00  | 3   | August |
+                                   +-------+-----+--------+";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+
+            var parseResult = gwtParser.WithPattern(@"^Given following schedule for (?:Tom|Jerry)'s meetings$")
+                                       .ParseSingleLine()
+                                       .WithTableOf<DateTimeParser, DateTime>();
+
+            parseResult.ParsedData.Should().Match<ParsedData<IList<string>, IEnumerable<DateTime>>>(d =>
+                d.Line.Count == 0 &&
+                d.Table.Count() == 2 &&
+                d.Table.ToList()[0] == new DateTime(2018, 5, 15, 10, 30, 0) &&
+                d.Table.ToList()[1] == new DateTime(2018, 8, 3, 9, 0, 0));
+        }
+
+        [Test]
+        public void Parsing_table_with_no_custom_type_includes_headers()
+        {
+            const string @case = @"Given following attendees
+                                   +-------+------+----------+
+                                   | name  | team | title    |
+                                   +-------+------+----------+
+                                   | Tom   | 6    | TechLead |
+                                   | Jerry | 2    | Manager  |
+                                   +-------+------+----------+";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+
+            var parseResult = gwtParser.WithPattern(@"^Given following attendees$")
+                                       .ParseSingleLine();
+
+            parseResult.ParsedData.Should().Match<ParsedData<IList<string>, IEnumerable<IEnumerable<string>>>>(d =>
+                d.Line.Count == 0 &&
+                d.Table.Count() == 3 &&
+                d.Table.ToList()[0].ToList()[0] == "name" &&
+                d.Table.ToList()[0].ToList()[1] == "team" &&
+                d.Table.ToList()[0].ToList()[2] == "title" &&
+                d.Table.ToList()[1].ToList()[0] == "Tom" &&
+                d.Table.ToList()[1].ToList()[1] == "6" &&
+                d.Table.ToList()[1].ToList()[2] == "TechLead" &&
+                d.Table.ToList()[2].ToList()[0] == "Jerry" &&
+                d.Table.ToList()[2].ToList()[1] == "2" &&
+                d.Table.ToList()[2].ToList()[2] == "Manager");
+        }
+
+        [Test]
+        public void Parses_table_with_custom_type_in_multi_lines()
+        {
+            const string @case = @"Given the meeting is at 11:30 on 15th of August with following attendees
+                                   +-------+------+----------+
+                                   | name  | team | title    |
+                                   +-------+------+----------+
+                                   | Tom   | 6    | TechLead |
+                                   | Jerry | 2    | Manager  |
+                                   +-------+------+----------+
+                                   And another meeting is at 9:00 on 16th of August with following attendees
+                                   +--------+------+-----------+
+                                   | name   | team | title     |
+                                   +--------+------+-----------+
+                                   | Tom    | 6    | TechLead  |
+                                   | Jerry  | 2    | Manager   |
+                                   | Cuckoo | 7    | Developer |
+                                   +--------+------+-----------+";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+
+            var parseResult = gwtParser.WithPattern(@"^Given (?:the|another) meeting is at (.*) on (\d+)(?:st|nd|rd|th) of (.*) with following attendees$")
+                                       .ParseMultiLines<DateTimeParser, DateTime>()
+                                       .WithTableOf<Attendee>();
+
+            parseResult.ParsedData.Should().Match<IEnumerable<ParsedData<DateTime, IEnumerable<Attendee>>>>(d =>
+                d.Count() == 2 &&
+                d.ToList()[0].Line == new DateTime(2018, 8, 15, 11, 30, 0) &&
+                d.ToList()[0].Table.Count() == 2 &&
+                d.ToList()[0].Table.ToList()[0].Name == "Tom" &&
+                d.ToList()[0].Table.ToList()[0].Team == 6 &&
+                d.ToList()[0].Table.ToList()[0].Title == Title.TechLead &&
+                d.ToList()[0].Table.ToList()[1].Name == "Jerry" &&
+                d.ToList()[0].Table.ToList()[1].Team == 2 &&
+                d.ToList()[0].Table.ToList()[1].Title == Title.Manager &&
+                d.ToList()[1].Line == new DateTime(2018, 8, 16, 9, 0, 0) &&
+                d.ToList()[1].Table.Count() == 3 &&
+                d.ToList()[1].Table.ToList()[0].Name == "Tom" &&
+                d.ToList()[1].Table.ToList()[0].Team == 6 &&
+                d.ToList()[1].Table.ToList()[0].Title == Title.TechLead &&
+                d.ToList()[1].Table.ToList()[1].Name == "Jerry" &&
+                d.ToList()[1].Table.ToList()[1].Team == 2 &&
+                d.ToList()[1].Table.ToList()[1].Title == Title.Manager &&
+                d.ToList()[1].Table.ToList()[2].Name == "Cuckoo" &&
+                d.ToList()[1].Table.ToList()[2].Team == 7 &&
+                d.ToList()[1].Table.ToList()[2].Title == Title.Developer);
+        }
+
+        [Test]
+        public void Parses_table_with_custom_parser_class_in_multi_lines()
+        {
+            const string @case = @"Given following schedule for Tom's meetings
+                                   +-------+-----+--------+
+                                   | time  | day | month  |
+                                   +-------+-----+--------+
+                                   | 10:30 | 15  | May    |
+                                   | 9:00  | 3   | August |
+                                   +-------+-----+--------+
+                                   And following schedule for Jerry's meetings
+                                   +-------+-----+-------+
+                                   | time  | day | month |
+                                   +-------+-----+-------+
+                                   | 10:30 | 15  | May   |
+                                   | 8:30  | 25  | June  |
+                                   +-------+-----+-------+";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+
+            var parseResult = gwtParser.WithPattern(@"^Given following schedule for (?:Tom|Jerry)'s meetings$")
+                                       .ParseMultiLines()
+                                       .WithTableOf<DateTimeParser, DateTime>();
+
+            parseResult.ParsedData.Should().Match<IEnumerable<ParsedData<IList<string>, IEnumerable<DateTime>>>>(d =>
+                d.Count() == 2 &&
+                d.ToList()[0].Table.Count() == 2 &&
+                d.ToList()[0].Table.ToList()[0] == new DateTime(2018, 5, 15, 10, 30, 0) &&
+                d.ToList()[0].Table.ToList()[1] == new DateTime(2018, 8, 3, 9, 0, 0) &&
+                d.ToList()[1].Table.Count() == 2 &&
+                d.ToList()[1].Table.ToList()[0] == new DateTime(2018, 5, 15, 10, 30, 0) &&
+                d.ToList()[1].Table.ToList()[1] == new DateTime(2018, 6, 25, 8, 30, 0));
+        }
+
+        private class Attendee
+        {
+            public Attendee(string name, int team, Title title)
+            {
+                Name = name;
+                Team = team;
+                Title = title;
+            }
+
+            public string Name { get; private set; }
+            public int Team { get; private set; }
+            public Title Title { get; private set; }
+        }
+
+        private enum Title
+        {
+            Developer,
+            TechLead,
+            Manager
         }
 
         private class DateTimeParser : IParser<DateTime>
@@ -316,7 +561,7 @@ And Jerry has 1 apple and 1 orange";
                 {"HourOfDay", new HourOfDay("3pm") }
             };
 
-            ((object)parseResult.Data).ShouldBeEquivalentTo(expected);
+            ((object)parseResult.ParsedData.Line).ShouldBeEquivalentTo(expected);
         }
 
         [Test]
@@ -357,7 +602,7 @@ And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Tim
                 }
             };
 
-            ((object)parseResult.Data).ShouldBeEquivalentTo(expected);
+            ((object)parseResult.ParsedData.Select(d => d.Line)).ShouldBeEquivalentTo(expected);
         }
 
         [Test]
@@ -374,7 +619,7 @@ And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Tim
             var expected = new ObjectWithConstructor(
                 Guid.Parse("6579328A-B45A-48EB-BC1C-68018157F47A"), new HourOfDay("3pm"), TimeSpan.Parse("10:35:17"), DateTimeOffset.Parse("2017-01-10T17:30:21-08:00"), Fruit.Apple, DateTime.Parse("2017/1/10"), "Tom", 2);
 
-            parseResult.Data.ShouldBeEquivalentTo(expected);
+            parseResult.ParsedData.Line.ShouldBeEquivalentTo(expected);
         }
 
         [Test]
@@ -396,7 +641,7 @@ And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Tim
                     Guid.Parse("B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F"), new HourOfDay("11am"), TimeSpan.Parse("05:42:02"), DateTimeOffset.Parse("2017-02-01T06:51:16-08:00"), Fruit.Orange, DateTime.Parse("2017/2/1"), "Jerry", 1)
             };
 
-            parseResult.Data.ShouldBeEquivalentTo(expected);
+            parseResult.ParsedData.Select(d => d.Line).ShouldBeEquivalentTo(expected);
         }
 
         [Test]
@@ -409,7 +654,7 @@ And test data - Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B
 
             var parseResult = gwtParser.WithPattern(@"Given test data - Time: (.*), DateTimeOffset: (.*), ID: (.*), Hour of day: ((?:[1][0-2]|[1-9])(?:am|pm))")
                                        .To("time".As<TimeSpan>(), "dateTimeOffset".As<DateTimeOffset>(), "id".As<Guid>(), "hourOfDay".As<HourOfDay>())
-                                       .With("name".Value("Tom"), "quantity".Value(2), "favoriteFruit".Value(Fruit.Apple), "date".Value(DateTime.Parse("2017/1/10")))
+                                       .WithAdditionalValuesOf("Tom".For("name"), 2.For("quantity"), Fruit.Apple.For("favoriteFruit"), DateTime.Parse("2017/1/10").For("date"))
                                        .ParseMultiLines<ObjectWithConstructor>(Using.Constructor);
 
             var expected = new List<ObjectWithConstructor> {
@@ -419,7 +664,7 @@ And test data - Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B
                     Guid.Parse("B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F"), new HourOfDay("11am"), TimeSpan.Parse("05:42:02"), DateTimeOffset.Parse("2017-02-01T06:51:16-08:00"), Fruit.Apple, DateTime.Parse("2017/1/10"), "Tom", 2)
             };
 
-            parseResult.Data.ShouldBeEquivalentTo(expected);
+            parseResult.ParsedData.Select(d => d.Line).ShouldBeEquivalentTo(expected);
         }
 
         private class ObjectWithConstructor
@@ -469,7 +714,7 @@ And test data - Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B
                 Quantity = 2
             };
 
-            parseResult.Data.ShouldBeEquivalentTo(expected);
+            parseResult.ParsedData.Line.ShouldBeEquivalentTo(expected);
         }
 
         [Test]
@@ -510,7 +755,7 @@ And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Tim
                 }
             };
 
-            parseResult.Data.ShouldBeEquivalentTo(expected);
+            parseResult.ParsedData.Select(d => d.Line).ShouldBeEquivalentTo(expected);
         }
 
         [Test]
@@ -523,7 +768,7 @@ And test data - Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B
 
             var parseResult = gwtParser.WithPattern(@"Given test data - Time: (.*), DateTimeOffset: (.*), ID: (.*), Hour of day: ((?:[1][0-2]|[1-9])(?:am|pm))")
                                        .To("Time".As<TimeSpan>(), "DateTimeOffset".As<DateTimeOffset>(), "Id".As<Guid>(), "HourOfDay".As<HourOfDay>())
-                                       .With("Name".Value("Tom"), "Quantity".Value(2), "FavoriteFruit".Value(Fruit.Apple), "Date".Value(DateTime.Parse("2017/1/10")))
+                                       .WithAdditionalValuesOf("Tom".For("Name"), 2.For("Quantity"), Fruit.Apple.For("FavoriteFruit"), DateTime.Parse("2017/1/10").For("Date"))
                                        .ParseMultiLines<ObjectWithProperties>(Using.Properties);
 
             var expected = new List<ObjectWithProperties>
@@ -552,7 +797,7 @@ And test data - Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B
                 }
             };
 
-            parseResult.Data.ShouldBeEquivalentTo(expected);
+            parseResult.ParsedData.Select(d => d.Line).ShouldBeEquivalentTo(expected);
         }
 
         private class ObjectWithProperties
@@ -578,7 +823,7 @@ And test data - Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B
 
             var expected = string.IsNullOrEmpty(result) ? (int?)null : int.Parse(result);
 
-            parseResult.Data.Should().Be(expected);
+            parseResult.ParsedData.Line.Should().Be(expected);
         }
 
         [Test]
@@ -594,7 +839,7 @@ And nullable integer: 3.";
 
             var expected = new List<int?> { null, 3 };
 
-            parseResult.Data.ShouldAllBeEquivalentTo(expected);
+            parseResult.ParsedData.Select(d => d.Line).ShouldAllBeEquivalentTo(expected);
         }
 
         [Test]
@@ -623,7 +868,7 @@ And nullable TimeSpan: , nullable integer: 3.";
                 }
             };
 
-            ((object)parseResult.Data).ShouldBeEquivalentTo(expected);
+            ((object)parseResult.ParsedData.Select(d => d.Line)).ShouldBeEquivalentTo(expected);
         }
 
         [Test]
@@ -639,7 +884,7 @@ And nullable integer: 3.";
 
             var expected = new List<int?> { null, 3 };
 
-            parseResult.Data.Select(d => (int?)d).ShouldAllBeEquivalentTo(expected);
+            parseResult.ParsedData.Select(d => d.Line).Select(d => (int?)d).ShouldAllBeEquivalentTo(expected);
         }
 
         private class NullableInteger
@@ -655,6 +900,89 @@ And nullable integer: 3.";
             {
                 return nullableInteger._value;
             }
+        }
+
+        [Test]
+        public void Dynamic_parser_sets_dynamic_properties_with_default_value_when_there_are_no_matching_lines()
+        {
+            const string @case = @"Given something..";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parseResult = gwtParser.WithPattern(@"Given test data - Name: (.*), Age: (\d+), Favorite Fruit: (apple|orange), Date: (.*), Time: (.*), DateTimeOffset: (.*), ID: (.*), Hour of day: ((?:[1][0-2]|[1-9])(?:am|pm))")
+                                       .To("Name".As<string>(), "Quantity".As<int>(), "FavoriteFruit".As<Fruit>(), "Date".As<DateTime>(), "Time".As<TimeSpan>(), "DateTimeOffset".As<DateTimeOffset>(), "Id".As<Guid>(), "HourOfDay".As<HourOfDay>())
+                                       .ParseSingleLine();
+
+            var expected = new Dictionary<string, object>
+            {
+                { "Name", default(string) },
+                { "Quantity", default(int) },
+                { "FavoriteFruit", default(Fruit) },
+                { "Date", default(DateTime) },
+                { "Time", default(TimeSpan) },
+                { "DateTimeOffset", default(DateTimeOffset) },
+                { "Id", default(Guid) },
+                {"HourOfDay", default(HourOfDay) }
+            };
+
+            ((object)parseResult.ParsedData.Line).ShouldBeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void Dynamic_parser_does_not_throw_when_there_are_no_matching_lines()
+        {
+            const string @case = "Given something..";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parser = gwtParser.WithPattern(@"^Given there are (\d+) cats$")
+                                  .To("Cats".As<int>())
+                                  .WithAdditionalValuesOf(Fruit.Apple.For("favoriteFruit"));
+
+            Assert.DoesNotThrow(() =>
+            {
+                var singleLine = parser.ParseSingleLine().ParsedData.Line.Cats;
+                var singleTable = parser.ParseSingleLine().ParsedData.Table.ToList();
+                var multiLines = parser.ParseMultiLines().ParsedData.Select(d => d.Line.Cats).ToList();
+                var multiTables = parser.ParseMultiLines().ParsedData.Select(d => d.Table.ToList()).ToList();
+            });
+        }
+
+        [Test]
+        public void Parsing_with_custom_parser_class_does_not_throw_when_there_are_no_matching_lines()
+        {
+            const string @case = "Given something..";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+            var parser = gwtParser.WithPattern(@"^Given the meeting is at (.*) on (\d+)(?:st|nd|rd|th) of (.*)$");
+
+            Assert.DoesNotThrow(() =>
+            {
+                var singleLine = parser.ParseSingleLine<DateTimeParser, DateTime>().ParsedData.Line.ToUniversalTime();
+                var singleTable = parser.ParseSingleLine<DateTimeParser, DateTime>().ParsedData.Table.Select(t => t.ToList()).ToList();
+                var multiLines = parser.ParseMultiLines<DateTimeParser, DateTime>().ParsedData.Select(d => d.Line.ToUniversalTime()).ToList();
+                var multiTables = parser.ParseMultiLines<DateTimeParser, DateTime>().ParsedData.Select(d => d.Table.Select(t => t.ToList()).ToList()).ToList();
+            });
+        }
+
+        [Test]
+        public void Parsing_with_custom_table_class_does_not_throw_when_there_are_no_matching_lines()
+        {
+            const string @case = @"Given something..";
+
+            var gwtParser = TinyGWTParser.WithTestCase(@case);
+
+
+            var parser = gwtParser.WithPattern(@"^Given following attendees$");
+
+            Assert.DoesNotThrow(() =>
+            {
+                var singleLine = parser.ParseSingleLine().WithTableOf<Attendee>().ParsedData.Line.Select(l => l).ToList();
+                var singleTable = parser.ParseSingleLine().WithTableOf<Attendee>().ParsedData.Table.Select(t => t.Name).ToList();
+                var multiLines = parser.ParseMultiLines().WithTableOf<Attendee>().ParsedData.Select(d => d.Line.Select(l => l).ToList()).ToList();
+                var multiTables = parser.ParseMultiLines().WithTableOf<Attendee>().ParsedData.Select(d => d.Table.Select(t => t.Name).ToList()).ToList();
+            });
         }
 
         private enum Fruit

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace TinyGivenWhenThenParser.Extensions
 {
@@ -19,7 +20,13 @@ namespace TinyGivenWhenThenParser.Extensions
             return new Property(name, typeof(T));
         }
 
+        [Obsolete]
         public static KeyValuePair<string, object> Value(this string name, object value)
+        {
+            return new KeyValuePair<string, object>(name, value);
+        }
+
+        public static KeyValuePair<string, object> For(this object value, string name)
         {
             return new KeyValuePair<string, object>(name, value);
         }

@@ -41,11 +41,15 @@
   <ItemGroup>
     <Compile Include="Exceptions\NoResolvableConstructorException.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Extensions\StringListExtensions.cs" />
+    <Compile Include="Extensions\StringTableExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="From.cs" />
     <Compile Include="Exceptions\GwtParserException.cs" />
     <Compile Include="IParser.cs" />
-    <Compile Include="ParseResult.cs" />
+    <Compile Include="Results\ParsedData.cs" />
+    <Compile Include="Results\ParseResult.cs" />
+    <Compile Include="Results\ParseResults.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Property.cs" />
     <Compile Include="StringConverters\Constructor.cs" />
