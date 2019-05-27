@@ -312,9 +312,12 @@ And Jerry has 1 apple and 1 orange";
         public void Parses_table_with_custom_type_in_single_line()
         {
             const string @case = @"Given following attendees
+                                   +-------+------+----------+
                                    | name  | team | title    |
+                                   +-------+------+----------+
                                    | Tom   | 6    | TechLead |
-                                   | Jerry | 2    | Manager  |";
+                                   | Jerry | 2    | Manager  |
+                                   +-------+------+----------+";
 
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
@@ -338,9 +341,11 @@ And Jerry has 1 apple and 1 orange";
         public void Flips_and_parses_table_when_the_table_is_vertical()
         {
             const string @case = @"Given following attendees
+                                   ++-------++----------+---------+
                                    || name  || Tom      | Jerry   |
                                    || team  || 6        | 2       |
-                                   || title || TechLead | Manager |";
+                                   || title || TechLead | Manager |
+                                   ++-------++----------+---------+";
 
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
@@ -364,9 +369,12 @@ And Jerry has 1 apple and 1 orange";
         public void Parses_table_with_custom_parser_class_in_single_line()
         {
             const string @case = @"Given following schedule for Tom's meetings
+                                   +-------+-----+--------+
                                    | time  | day | month  |
+                                   +-------+-----+--------+
                                    | 10:30 | 15  | May    |
-                                   | 9:00  | 3   | August |";
+                                   | 9:00  | 3   | August |
+                                   +-------+-----+--------+";
 
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
@@ -386,9 +394,12 @@ And Jerry has 1 apple and 1 orange";
         public void Parsing_table_with_no_custom_type_includes_headers()
         {
             const string @case = @"Given following attendees
+                                   +-------+------+----------+
                                    | name  | team | title    |
+                                   +-------+------+----------+
                                    | Tom   | 6    | TechLead |
-                                   | Jerry | 2    | Manager  |";
+                                   | Jerry | 2    | Manager  |
+                                   +-------+------+----------+";
 
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
@@ -414,14 +425,20 @@ And Jerry has 1 apple and 1 orange";
         public void Parses_table_with_custom_type_in_multi_lines()
         {
             const string @case = @"Given the meeting is at 11:30 on 15th of August with following attendees
+                                   +-------+------+----------+
                                    | name  | team | title    |
+                                   +-------+------+----------+
                                    | Tom   | 6    | TechLead |
                                    | Jerry | 2    | Manager  |
+                                   +-------+------+----------+
                                    And another meeting is at 9:00 on 16th of August with following attendees
+                                   +--------+------+-----------+
                                    | name   | team | title     |
+                                   +--------+------+-----------+
                                    | Tom    | 6    | TechLead  |
                                    | Jerry  | 2    | Manager   |
-                                   | Cuckoo | 7    | Developer |";
+                                   | Cuckoo | 7    | Developer |
+                                   +--------+------+-----------+";
 
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
@@ -457,13 +474,19 @@ And Jerry has 1 apple and 1 orange";
         public void Parses_table_with_custom_parser_class_in_multi_lines()
         {
             const string @case = @"Given following schedule for Tom's meetings
+                                   +-------+-----+--------+
                                    | time  | day | month  |
+                                   +-------+-----+--------+
                                    | 10:30 | 15  | May    |
                                    | 9:00  | 3   | August |
+                                   +-------+-----+--------+
                                    And following schedule for Jerry's meetings
+                                   +-------+-----+-------+
                                    | time  | day | month |
+                                   +-------+-----+-------+
                                    | 10:30 | 15  | May   |
-                                   | 8:30  | 25  | June  |";
+                                   | 8:30  | 25  | June  |
+                                   +-------+-----+-------+";
 
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 

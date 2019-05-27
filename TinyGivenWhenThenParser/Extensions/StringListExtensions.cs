@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TinyGivenWhenThenParser.Exceptions;
 
 namespace TinyGivenWhenThenParser.Extensions
@@ -33,7 +34,7 @@ namespace TinyGivenWhenThenParser.Extensions
 
         public static IEnumerable<string> GetTableSource(this List<string> caseLineSegments)
         {
-            return caseLineSegments.GetRange(1, caseLineSegments.Count - 1);
+            return caseLineSegments.GetRange(1, caseLineSegments.Count - 1).Where(l => l.Contains('|'));
         }
     }
 }

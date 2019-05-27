@@ -18,8 +18,8 @@ namespace TinyGivenWhenThenParser
 
         private TinyGWTParser(string testCase)
         {
-            var regex = new Regex("(\r\n|\n)[ ]*\\|");
-            var replacedCase = regex.Replace(testCase, $"{TableLineBreak}|");
+            var regex = new Regex("(\r\n|\n)[ ]*(\\||\\+)");
+            var replacedCase = regex.Replace(testCase, m => $"{TableLineBreak}{m.Groups[2].Value}");
 
             if (!replacedCase.StartsWith("Given ") && !replacedCase.StartsWith("When "))
                 throw new GwtParserException("Test case must start with 'Given' or 'When'");
