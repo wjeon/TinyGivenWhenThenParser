@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace TinyGivenWhenThenParser.Extensions
@@ -9,9 +10,27 @@ namespace TinyGivenWhenThenParser.Extensions
         {
             var table = tableSource.Select(c => c.Replace("||", "|").Trim('|').Split('|').Select(v => v.Trim())).ToList();
 
-            return tableSource.First().Trim().EndsWith("||")
-                ? table
-                : table.FlipVerticalTableToHorizontal();
+            return tableSource.IsVerticalTable()
+                ? table.FlipVerticalTableToHorizontal()
+                : table;
+        }
+
+        private static bool IsVerticalTable(this IEnumerable<string> tableSource)
+        {
+            return tableSource.Select(row => row.Trim().Split('|'))
+                              .All(r => r.Length > 5 && r[0] == string.Empty && r[1] == string.Empty && r[2] != string.Empty && r[3] == string.Empty &&
+                                        r.RestBeforeLastAreNotEmpty() && r.Last() == string.Empty);
+        }
+
+        private static bool RestBeforeLastAreNotEmpty(this IReadOnlyList<string> you)
+        {
+            for (var i = 4; i < you.Count - 1; i++)
+            {
+                if (you[i] == string.Empty)
+                    return false;
+            }
+
+            return true;
         }
 
         private static IEnumerable<IEnumerable<string>> FlipVerticalTableToHorizontal(this IEnumerable<IEnumerable<string>> table)
