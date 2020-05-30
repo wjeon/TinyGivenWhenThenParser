@@ -203,17 +203,24 @@ And Jerry has 1 apple", @"And (.*) has (|\d+)( apple|)(?:s|)(?:| and )(|\d+)( or
             var singleLineParseResult = gwtParser.WithPattern(pattern)
                 .ParseSingleLine(From.OriginalTestCase);
 
-            singleLineParseResult.Should().BeEquivalentTo(new ParseResult<ParsedData<string[], IEnumerable<IEnumerable<string>>>, string[]>(
-                true, new ParsedData<string[], IEnumerable<IEnumerable<string>>>(parsedData.Split(','), Enumerable.Empty<IEnumerable<string>>())));
+            var expectedSingleLineResult = new ParseResult<ParsedData<string[], IEnumerable<IEnumerable<string>>>, string[]>(
+                true,
+                new ParsedData<string[], IEnumerable<IEnumerable<string>>>(parsedData.Split(','), Enumerable.Empty<IEnumerable<string>>())
+            );
+
+            singleLineParseResult.Should().BeEquivalentTo(expectedSingleLineResult);
 
             var multiLineParseResult = gwtParser.WithPattern(pattern)
                 .ParseMultiLines(From.OriginalTestCase);
 
-            multiLineParseResult.Should().BeEquivalentTo(new ParseResult<IEnumerable<ParsedData<string[], IEnumerable<IEnumerable<string>>>>, string[][]>(
-                true, new List<ParsedData<string[], IEnumerable<IEnumerable<string>>>>
+            var expectedMultiLineResult = new ParseResult<IEnumerable<ParsedData<string[], IEnumerable<IEnumerable<string>>>>, string[][]>(
+                true,
+                new List<ParsedData<string[], IEnumerable<IEnumerable<string>>>>
                 {
                     new ParsedData<string[], IEnumerable<IEnumerable<string>>>(parsedData.Split(','), Enumerable.Empty<IEnumerable<string>>())
-                }));
+                });
+
+            multiLineParseResult.Should().BeEquivalentTo(expectedMultiLineResult);
         }
 
         [TestCase(@"Case #1: Given Tom has 2 apples and 3 oranges
