@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using TinyGivenWhenThenParser.Exceptions;
 using TinyGivenWhenThenParser.Extensions;
@@ -185,19 +186,52 @@ And Jerry has 1 apple";
             parseResult.Should().BeEquivalentTo(expectedResult);
         }
 
-        [TestCase(@"Given Tom has 2 apples and 3 oranges
-And Jerry has 1 apple and 1 orange", @"Given (.*) has (\d+) apple(?:s|) and (\d+) orange(?:s|)", "Tom,2,3")]
-        [TestCase(@"When Tom eats 1 apple and 2 oranges
-And Jerry eats 1 orange", @"When (.*) eats (|\d+)( apple|)(?:s|)(?:| and )(|\d+)( orange|)(?:s|)", "Tom,1, apple,2, orange")]
-        [TestCase(@"When ignore this line
-Then Tom has 1 apple and 1 orange
-And Jerry has 1 apple", @"Then (.*) has (|\d+)( apple|)(?:s|)(?:| and )(|\d+)( orange|)(?:s|)", "Tom,1, apple,1, orange")]
-        [TestCase(@"When ignore this line
-Then Tom has 1 apple and 1 orange
-And Jerry has 1 apple", @"And (.*) has (|\d+)( apple|)(?:s|)(?:| and )(|\d+)( orange|)(?:s|)", "Jerry,1, apple,,")]
+        private static string OriginalTestCase_option_test_case_source = @"[
+          {
+            'case': 'Given Tom has 2 apples and 3 oranges
+                     And Jerry has 1 apple and 1 orange',
+            'pattern': 'Given (.*) has (\\d+) apple(?:s|) and (\\d+) orange(?:s|)',
+            'parsedData': 'Tom,2,3',
+            'description': 'Parse leading Given only -> Tom,2,3'
+          },
+          {
+            'case': 'When Tom eats 1 apple and 2 oranges
+                     And Jerry eats 1 orange',
+            'pattern': 'When (.*) eats (|\\d+)( apple|)(?:s|)(?:| and )(|\\d+)( orange|)(?:s|)',
+            'parsedData': 'Tom,1, apple,2, orange',
+            'description': 'Parse leading When only -> Tom,1, apple,2, orange'
+          },
+          {
+            'case': 'When ignore this line
+                     Then Tom has 1 apple and 1 orange
+                     And Jerry has 1 apple',
+            'pattern': 'Then (.*) has (|\\d+)( apple|)(?:s|)(?:| and )(|\\d+)( orange|)(?:s|)',
+            'parsedData': 'Tom,1, apple,1, orange',
+            'description': 'Parse leading Then only -> Tom,1, apple,1, orange'
+          },
+          {
+            'case': 'When ignore this line
+                     Then Tom has 1 apple and 1 orange
+                     And Jerry has 1 apple',
+            'pattern': 'And (.*) has (|\\d+)( apple|)(?:s|)(?:| and )(|\\d+)( orange|)(?:s|)',
+            'parsedData': 'Jerry,1, apple,,',
+            'description': 'Parse leading And only -> Jerry,1, apple,,'
+          }
+        ]";
+
+        private static object[] OriginalTestCase_option_case_ids =
+            GetCaseIdsFrom(CasesFrom(OriginalTestCase_option_test_case_source), descriptionFieldName: "description");
+
+        [Test, TestCaseSource("OriginalTestCase_option_case_ids")]
         public void Leading_And_in_the_line_is_not_replaced_and_the_line_is_matched_with_the_pattern_for_And_when_OriginalTestCase_option_is_selected
-            (string @case, string pattern, string parsedData)
+            (int caseId, string description)
         {
+            var cases = CasesFrom(OriginalTestCase_option_test_case_source);
+
+            var @case = cases[caseId]["case"];
+            var pattern = cases[caseId]["pattern"];
+            var parsedData = cases[caseId]["parsedData"];
+
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
             var singleLineParseResult = gwtParser.WithPattern(pattern)
@@ -223,14 +257,34 @@ And Jerry has 1 apple", @"And (.*) has (|\d+)( apple|)(?:s|)(?:| and )(|\d+)( or
             multiLineParseResult.Should().BeEquivalentTo(expectedMultiLineResult);
         }
 
-        [TestCase(@"Case #1: Given Tom has 2 apples and 3 oranges
-And Jerry has 1 apple and 1 orange")]
-        [TestCase(@"Then Tom has 2 apples and 3 oranges
-And Jerry has 1 apple and 1 orange")]
-        [TestCase(@"And Tom has 2 apples and 3 oranges
-And Jerry has 1 apple and 1 orange")]
-        public void When_a_test_case_begins_with_other_than_Given_and_When_it_throws(string @case)
+        private static string Throw_when_begins_with_other_than_Given_and_When_test_case_source = @"[
+          {
+            'case': 'Case #1: Given Tom has 2 apples and 3 oranges
+                     And Jerry has 1 apple and 1 orange',
+            'description': 'Begins with ""Case"" -> throw'
+          },
+          {
+            'case': 'Then Tom has 2 apples and 3 oranges
+                     And Jerry has 1 apple and 1 orange',
+            'description': 'Begins with ""Then"" -> throw'
+          },
+          {
+            'case': 'And Tom has 2 apples and 3 oranges
+                     And Jerry has 1 apple and 1 orange',
+            'description': 'Begins with ""And"" -> throw'
+          }
+        ]";
+
+        private static object[] Throw_when_begins_with_other_than_Given_and_When_case_ids =
+            GetCaseIdsFrom(CasesFrom(Throw_when_begins_with_other_than_Given_and_When_test_case_source), descriptionFieldName: "description");
+
+        [Test, TestCaseSource("Throw_when_begins_with_other_than_Given_and_When_case_ids")]
+        public void When_a_test_case_begins_with_other_than_Given_and_When_it_throws(int caseId, string description)
         {
+            var cases = CasesFrom(Throw_when_begins_with_other_than_Given_and_When_test_case_source);
+
+            var @case = cases[caseId]["case"];
+
             Assert.Throws<GwtParserException>(() => TinyGWTParser.WithTestCase(@case));
         }
 
@@ -996,6 +1050,24 @@ And nullable integer: 3.";
         {
             Apple,
             Orange
+        }
+
+        private static Dictionary<string, string>[] CasesFrom(string caseSource)
+        {
+            return JsonConvert.DeserializeObject<Dictionary<string, string>[]>(caseSource);
+        }
+
+        private static object[] GetCaseIdsFrom(Dictionary<string, string>[] cases, string descriptionFieldName)
+        {
+            var caseIds = new List<object>();
+
+            for (var i = 0; i < cases.Length; i++)
+            {
+                var description = cases[i][descriptionFieldName];
+                caseIds.Add(new object[] { i, description });
+            }
+
+            return caseIds.ToArray();
         }
     }
 }
