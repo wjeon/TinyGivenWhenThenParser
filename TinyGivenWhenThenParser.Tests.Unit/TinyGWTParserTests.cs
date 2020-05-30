@@ -30,7 +30,7 @@ namespace TinyGivenWhenThenParser.Tests.Unit
                     Enumerable.Empty<IEnumerable<string>>()
                 ));
 
-            parseResult.ShouldBeEquivalentTo(expectedResult);
+            parseResult.Should().BeEquivalentTo(expectedResult);
         }
 
         [TestCase(@"When Tom eats 1 apple and 2 oranges", true, "Tom,1, apple,2, orange")]
@@ -51,7 +51,7 @@ namespace TinyGivenWhenThenParser.Tests.Unit
                     Enumerable.Empty<IEnumerable<string>>()
                 ));
 
-            parseResult.ShouldBeEquivalentTo(expectedResult);
+            parseResult.Should().BeEquivalentTo(expectedResult);
         }
 
         [TestCase(@"When ignore this line
@@ -74,7 +74,7 @@ Then Jerry has 1 apple", true, "Jerry,1, apple,,")]
                     Enumerable.Empty<IEnumerable<string>>()
                 ));
 
-            parseResult.ShouldBeEquivalentTo(expectedResult);
+            parseResult.Should().BeEquivalentTo(expectedResult);
         }
 
         [Test]
@@ -92,7 +92,7 @@ Given Jerry has 1 orange";
             var expectedResult = new ParseResult<ParsedData<string[], IEnumerable<IEnumerable<string>>>, string[]>(
                 true, new ParsedData<string[], IEnumerable<IEnumerable<string>>>(new[] { "Tom", "3", "apple" }, Enumerable.Empty<IEnumerable<string>>()));
 
-            parseResult.ShouldBeEquivalentTo(expectedResult);
+            parseResult.Should().BeEquivalentTo(expectedResult);
         }
 
         [Test]
@@ -115,7 +115,7 @@ Given Jerry has 1 orange";
                     new ParsedData<string[], IEnumerable<IEnumerable<string>>>(new[] { "Jerry", "1", "orange" }, Enumerable.Empty<IEnumerable<string>>())
                 });
 
-            parseResult.ShouldBeEquivalentTo(expectedResult);
+            parseResult.Should().BeEquivalentTo(expectedResult);
         }
 
         [Test]
@@ -137,7 +137,7 @@ And Jerry has 1 apple and 1 orange";
                     new ParsedData<string[], IEnumerable<IEnumerable<string>>>(new[] { "Jerry", "1", "1" }, Enumerable.Empty<IEnumerable<string>>())
                 });
 
-            parseResult.ShouldBeEquivalentTo(expectedResult);
+            parseResult.Should().BeEquivalentTo(expectedResult);
         }
 
         [Test]
@@ -159,7 +159,7 @@ And Jerry eats 1 orange";
                     new ParsedData<string[], IEnumerable<IEnumerable<string>>>(new[] { "Jerry", "", "","1", " orange" }, Enumerable.Empty<IEnumerable<string>>())
                 });
 
-            parseResult.ShouldBeEquivalentTo(expectedResult);
+            parseResult.Should().BeEquivalentTo(expectedResult);
         }
 
         [Test]
@@ -182,7 +182,7 @@ And Jerry has 1 apple";
                     new ParsedData<string[], IEnumerable<IEnumerable<string>>>(new[] { "Jerry", "1", " apple", "", "" }, Enumerable.Empty<IEnumerable<string>>())
                 });
 
-            parseResult.ShouldBeEquivalentTo(expectedResult);
+            parseResult.Should().BeEquivalentTo(expectedResult);
         }
 
         [TestCase(@"Given Tom has 2 apples and 3 oranges
@@ -203,13 +203,13 @@ And Jerry has 1 apple", @"And (.*) has (|\d+)( apple|)(?:s|)(?:| and )(|\d+)( or
             var singleLineParseResult = gwtParser.WithPattern(pattern)
                 .ParseSingleLine(From.OriginalTestCase);
 
-            singleLineParseResult.ShouldBeEquivalentTo(new ParseResult<ParsedData<string[], IEnumerable<IEnumerable<string>>>, string[]>(
+            singleLineParseResult.Should().BeEquivalentTo(new ParseResult<ParsedData<string[], IEnumerable<IEnumerable<string>>>, string[]>(
                 true, new ParsedData<string[], IEnumerable<IEnumerable<string>>>(parsedData.Split(','), Enumerable.Empty<IEnumerable<string>>())));
 
             var multiLineParseResult = gwtParser.WithPattern(pattern)
                 .ParseMultiLines(From.OriginalTestCase);
 
-            multiLineParseResult.ShouldBeEquivalentTo(new ParseResult<IEnumerable<ParsedData<string[], IEnumerable<IEnumerable<string>>>>, string[][]>(
+            multiLineParseResult.Should().BeEquivalentTo(new ParseResult<IEnumerable<ParsedData<string[], IEnumerable<IEnumerable<string>>>>, string[][]>(
                 true, new List<ParsedData<string[], IEnumerable<IEnumerable<string>>>>
                 {
                     new ParsedData<string[], IEnumerable<IEnumerable<string>>>(parsedData.Split(','), Enumerable.Empty<IEnumerable<string>>())
@@ -256,7 +256,7 @@ Also Jerry has 1 apple and 1 orange";
                 }
             };
 
-            parseResult.ParsedData.Line.ShouldBeEquivalentTo(expectedResult);
+            parseResult.ParsedData.Line.Should().BeEquivalentTo(expectedResult);
         }
 
         [Test]
@@ -291,7 +291,7 @@ And Jerry has 1 apple and 1 orange";
                 }
             };
 
-            parseResult.ParsedData.Select(d => d.Line).ShouldBeEquivalentTo(expectedResult);
+            parseResult.ParsedData.Select(d => d.Line).Should().BeEquivalentTo(expectedResult);
         }
 
         [Test]
@@ -561,7 +561,7 @@ And Jerry has 1 apple and 1 orange";
                 {"HourOfDay", new HourOfDay("3pm") }
             };
 
-            ((object)parseResult.ParsedData.Line).ShouldBeEquivalentTo(expected);
+            ((object)parseResult.ParsedData.Line).Should().BeEquivalentTo(expected);
         }
 
         [Test]
@@ -602,7 +602,7 @@ And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Tim
                 }
             };
 
-            ((object)parseResult.ParsedData.Select(d => d.Line)).ShouldBeEquivalentTo(expected);
+            ((object)parseResult.ParsedData.Select(d => d.Line)).Should().BeEquivalentTo(expected);
         }
 
         [Test]
@@ -619,7 +619,7 @@ And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Tim
             var expected = new ObjectWithConstructor(
                 Guid.Parse("6579328A-B45A-48EB-BC1C-68018157F47A"), new HourOfDay("3pm"), TimeSpan.Parse("10:35:17"), DateTimeOffset.Parse("2017-01-10T17:30:21-08:00"), Fruit.Apple, DateTime.Parse("2017/1/10"), "Tom", 2);
 
-            parseResult.ParsedData.Line.ShouldBeEquivalentTo(expected);
+            parseResult.ParsedData.Line.Should().BeEquivalentTo(expected);
         }
 
         [Test]
@@ -641,7 +641,7 @@ And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Tim
                     Guid.Parse("B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F"), new HourOfDay("11am"), TimeSpan.Parse("05:42:02"), DateTimeOffset.Parse("2017-02-01T06:51:16-08:00"), Fruit.Orange, DateTime.Parse("2017/2/1"), "Jerry", 1)
             };
 
-            parseResult.ParsedData.Select(d => d.Line).ShouldBeEquivalentTo(expected);
+            parseResult.ParsedData.Select(d => d.Line).Should().BeEquivalentTo(expected);
         }
 
         [Test]
@@ -664,7 +664,7 @@ And test data - Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B
                     Guid.Parse("B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F"), new HourOfDay("11am"), TimeSpan.Parse("05:42:02"), DateTimeOffset.Parse("2017-02-01T06:51:16-08:00"), Fruit.Apple, DateTime.Parse("2017/1/10"), "Tom", 2)
             };
 
-            parseResult.ParsedData.Select(d => d.Line).ShouldBeEquivalentTo(expected);
+            parseResult.ParsedData.Select(d => d.Line).Should().BeEquivalentTo(expected);
         }
 
         private class ObjectWithConstructor
@@ -714,7 +714,7 @@ And test data - Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B
                 Quantity = 2
             };
 
-            parseResult.ParsedData.Line.ShouldBeEquivalentTo(expected);
+            parseResult.ParsedData.Line.Should().BeEquivalentTo(expected);
         }
 
         [Test]
@@ -755,7 +755,7 @@ And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Tim
                 }
             };
 
-            parseResult.ParsedData.Select(d => d.Line).ShouldBeEquivalentTo(expected);
+            parseResult.ParsedData.Select(d => d.Line).Should().BeEquivalentTo(expected);
         }
 
         [Test]
@@ -797,7 +797,7 @@ And test data - Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B
                 }
             };
 
-            parseResult.ParsedData.Select(d => d.Line).ShouldBeEquivalentTo(expected);
+            parseResult.ParsedData.Select(d => d.Line).Should().BeEquivalentTo(expected);
         }
 
         private class ObjectWithProperties
@@ -839,7 +839,7 @@ And nullable integer: 3.";
 
             var expected = new List<int?> { null, 3 };
 
-            parseResult.ParsedData.Select(d => d.Line).ShouldAllBeEquivalentTo(expected);
+            parseResult.ParsedData.Select(d => d.Line).Should().BeEquivalentTo(expected);
         }
 
         [Test]
@@ -868,7 +868,7 @@ And nullable TimeSpan: , nullable integer: 3.";
                 }
             };
 
-            ((object)parseResult.ParsedData.Select(d => d.Line)).ShouldBeEquivalentTo(expected);
+            ((object)parseResult.ParsedData.Select(d => d.Line)).Should().BeEquivalentTo(expected);
         }
 
         [Test]
@@ -884,7 +884,7 @@ And nullable integer: 3.";
 
             var expected = new List<int?> { null, 3 };
 
-            parseResult.ParsedData.Select(d => d.Line).Select(d => (int?)d).ShouldAllBeEquivalentTo(expected);
+            parseResult.ParsedData.Select(d => d.Line).Select(d => (int?)d).Should().BeEquivalentTo(expected);
         }
 
         private class NullableInteger
@@ -925,7 +925,7 @@ And nullable integer: 3.";
                 {"HourOfDay", default(HourOfDay) }
             };
 
-            ((object)parseResult.ParsedData.Line).ShouldBeEquivalentTo(expected);
+            ((object)parseResult.ParsedData.Line).Should().BeEquivalentTo(expected);
         }
 
         [Test]
