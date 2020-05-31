@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TinyGivenWhenThenParser", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TinyGivenWhenThenParser.NetCore.Tests.Unit", "TinyGivenWhenThenParser.NetCore.Tests.Unit\TinyGivenWhenThenParser.NetCore.Tests.Unit.csproj", "{49B4BFF4-A694-4300-A8E1-05FB5E4C4F52}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyGivenWhenThenParser.NetFramework.Tests.Unit", "TinyGivenWhenThenParser.NetFramework.Tests.Unit\TinyGivenWhenThenParser.NetFramework.Tests.Unit.csproj", "{194908A9-2B2E-4017-89F8-D04C303D7C01}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{49B4BFF4-A694-4300-A8E1-05FB5E4C4F52}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49B4BFF4-A694-4300-A8E1-05FB5E4C4F52}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49B4BFF4-A694-4300-A8E1-05FB5E4C4F52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{194908A9-2B2E-4017-89F8-D04C303D7C01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{194908A9-2B2E-4017-89F8-D04C303D7C01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{194908A9-2B2E-4017-89F8-D04C303D7C01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{194908A9-2B2E-4017-89F8-D04C303D7C01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
