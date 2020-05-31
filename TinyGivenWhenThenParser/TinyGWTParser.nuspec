@@ -12,6 +12,6 @@
     <tags>Tiny Given When Then Parser Test</tags>
   </metadata>
   <files>
-    <file src="bin\TinyGWTParser.dll" target="lib\net45" />
+    <file src="bin\netcoreapp2.2\TinyGivenWhenThenParser.dll" target="lib\netcoreapp2.2" />
   </files>
 </package>
