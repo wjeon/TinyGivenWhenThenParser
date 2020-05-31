@@ -56,10 +56,13 @@ namespace TinyGivenWhenThenParser.Tests.Unit
         }
 
         [TestCase(@"When ignore this line
-Then Tom has 1 apple and 1 orange", true, "Tom,1, apple,1, orange")]
+                    Then Tom has 1 apple and 1 orange",
+            true, "Tom,1, apple,1, orange")]
         [TestCase(@"When ignore this line
-Then Jerry has 1 apple", true, "Jerry,1, apple,,")]
-        [TestCase(@"Given Jerry has 1 apple", false, "")]
+                    Then Jerry has 1 apple",
+            true, "Jerry,1, apple,,")]
+        [TestCase(@"Given Jerry has 1 apple",
+            false, "")]
         public void Parse_data_from_a_sentence_correctly_with_the_pattern_for_Then_when_the_sentence_starts_with_Then
             (string @case, bool parsed, string parsedData)
         {
@@ -82,8 +85,8 @@ Then Jerry has 1 apple", true, "Jerry,1, apple,,")]
         public void When_test_case_has_multi_lines_ParseSingleLine_method_parses_data_from_the_first_matching_line()
         {
             const string multilineCase = @"Given not matching line
-Given Tom has 3 apples
-Given Jerry has 1 orange";
+                                           Given Tom has 3 apples
+                                           Given Jerry has 1 orange";
 
             var gwtParser = TinyGWTParser.WithTestCase(multilineCase);
 
@@ -100,8 +103,8 @@ Given Jerry has 1 orange";
         public void When_test_case_has_multi_lines_ParseMultiLines_method_parses_data_from_all_matching_lines()
         {
             const string multilineCase = @"Given not matching line
-Given Tom has 3 apples
-Given Jerry has 1 orange";
+                                           Given Tom has 3 apples
+                                           Given Jerry has 1 orange";
 
             var gwtParser = TinyGWTParser.WithTestCase(multilineCase);
 
@@ -123,7 +126,7 @@ Given Jerry has 1 orange";
         public void Leading_And_in_the_line_is_replaced_with_Given_and_the_line_is_matched_with_the_pattern_for_Given_if_And_line_is_after_Given_line()
         {
             const string multilineCase = @"Given Tom has 2 apples and 3 oranges
-And Jerry has 1 apple and 1 orange";
+                                           And Jerry has 1 apple and 1 orange";
 
             var gwtParser = TinyGWTParser.WithTestCase(multilineCase);
 
@@ -145,7 +148,7 @@ And Jerry has 1 apple and 1 orange";
         public void Leading_And_in_the_line_is_replaced_with_When_and_the_line_is_matched_with_the_pattern_for_When_if_And_line_is_after_When_line()
         {
             const string multilineCase = @"When Tom eats 1 apple and 2 oranges
-And Jerry eats 1 orange";
+                                           And Jerry eats 1 orange";
 
             var gwtParser = TinyGWTParser.WithTestCase(multilineCase);
 
@@ -167,8 +170,8 @@ And Jerry eats 1 orange";
         public void Leading_And_in_the_line_is_replaced_with_Then_and_the_line_is_matched_with_the_pattern_for_Then_if_And_line_is_after_Then_line()
         {
             const string multilineCase = @"When ignore this line
-Then Tom has 1 apple and 1 orange
-And Jerry has 1 apple";
+                                           Then Tom has 1 apple and 1 orange
+                                           And Jerry has 1 apple";
 
             var gwtParser = TinyGWTParser.WithTestCase(multilineCase);
 
@@ -292,7 +295,7 @@ And Jerry has 1 apple";
         public void When_a_test_case_contains_line_that_begins_with_other_than_And_Given_When_Then_it_throws()
         {
             var @case = @"Given Tom has 2 apples and 3 oranges
-Also Jerry has 1 apple and 1 orange";
+                          Also Jerry has 1 apple and 1 orange";
 
             Assert.Throws<GwtParserException>(() => TinyGWTParser.WithTestCase(@case));
         }
@@ -324,7 +327,7 @@ Also Jerry has 1 apple and 1 orange";
         public void ParseMultiLines_parses_with_generic_type()
         {
             const string @case = @"Given Tom has 2 apples and 3 oranges
-And Jerry has 1 apple and 1 orange";
+                                   And Jerry has 1 apple and 1 orange";
 
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
@@ -629,7 +632,7 @@ And Jerry has 1 apple and 1 orange";
         public void Strings_in_multi_lines_that_matched_with_the_pattern_are_parsed_correctly_to_the_types_configured_with_to_method()
         {
             const string @case = @"Given test data - Name: Tom, Age: 2, Favorite Fruit: apple, Date: 2017/1/10, Time: 10:35:17, DateTimeOffset: 2017-01-10T17:30:21-08:00, ID: 6579328A-B45A-48EB-BC1C-68018157F47A, Hour of day: 3pm
-And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F, Hour of day: 11am";
+                                   And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F, Hour of day: 11am";
 
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
@@ -687,7 +690,7 @@ And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Tim
         public void Strings_in_multi_lines_that_matched_with_the_pattern_are_parsed_correctly_to_the_types_configured_with_to_method_and_construct_return_object()
         {
             const string @case = @"Given test data - Name: Tom, Age: 2, Favorite Fruit: apple, Date: 2017/1/10, Time: 10:35:17, DateTimeOffset: 2017-01-10T17:30:21-08:00, ID: 6579328A-B45A-48EB-BC1C-68018157F47A, Hour of day: 3pm
-And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F, Hour of day: 11am";
+                                   And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F, Hour of day: 11am";
 
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
@@ -709,7 +712,7 @@ And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Tim
         public void Additional_parameter_values_that_passed_to_with_method_are_added_to_the_parsed_values_for_constructor_parameters()
         {
             const string @case = @"Given test data - Time: 10:35:17, DateTimeOffset: 2017-01-10T17:30:21-08:00, ID: 6579328A-B45A-48EB-BC1C-68018157F47A, Hour of day: 3pm
-And test data - Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F, Hour of day: 11am";
+                                   And test data - Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F, Hour of day: 11am";
 
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
@@ -782,7 +785,7 @@ And test data - Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B
         public void Strings_in_multi_lines_that_matched_with_the_pattern_are_parsed_correctly_to_the_types_configured_with_to_method_and_create_return_object()
         {
             const string @case = @"Given test data - Name: Tom, Age: 2, Favorite Fruit: apple, Date: 2017/1/10, Time: 10:35:17, DateTimeOffset: 2017-01-10T17:30:21-08:00, ID: 6579328A-B45A-48EB-BC1C-68018157F47A, Hour of day: 3pm
-And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F, Hour of day: 11am";
+                                   And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F, Hour of day: 11am";
 
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
@@ -823,7 +826,7 @@ And test data - Name: Jerry, Age: 1, Favorite Fruit: orange, Date: 2017/2/1, Tim
         public void Additional_parameter_values_that_passed_to_with_method_are_added_to_the_parsed_values_for_properties()
         {
             const string @case = @"Given test data - Time: 10:35:17, DateTimeOffset: 2017-01-10T17:30:21-08:00, ID: 6579328A-B45A-48EB-BC1C-68018157F47A, Hour of day: 3pm
-And test data - Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F, Hour of day: 11am";
+                                   And test data - Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B045F0D5-F7FB-4DA8-91A4-8D8D365B0B0F, Hour of day: 11am";
 
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
@@ -891,7 +894,7 @@ And test data - Time: 05:42:02, DateTimeOffset: 2017-02-01T06:51:16-08:00, ID: B
         public void ParseMultiLines_parses_the_matches_to_nullable_type_correctly()
         {
             const string @case = @"Given nullable integer: .
-And nullable integer: 3.";
+                                   And nullable integer: 3.";
 
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
@@ -907,7 +910,7 @@ And nullable integer: 3.";
         public void Matches_are_parsed_to_nullable_types_and_returned_via_properties_in_dynamic_object()
         {
             const string @case = @"Given nullable TimeSpan: 00:17:00, nullable integer: .
-And nullable TimeSpan: , nullable integer: 3.";
+                                   And nullable TimeSpan: , nullable integer: 3.";
 
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
@@ -936,7 +939,7 @@ And nullable TimeSpan: , nullable integer: 3.";
         public void Matches_are_parsed_to_nullable_types_via_constructor_parameters()
         {
             const string @case = @"Given nullable integer: .
-And nullable integer: 3.";
+                                   And nullable integer: 3.";
 
             var gwtParser = TinyGWTParser.WithTestCase(@case);
 
