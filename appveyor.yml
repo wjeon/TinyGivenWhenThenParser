@@ -57,7 +57,7 @@ before_build:
 build:
   verbosity: minimal
 build_script:
-  # Output will be in .\$env:VS_PROJECT_NAME\bin\netcoreapp2.2\publish
+  # Output will be in .\$env:VS_PROJECT_NAME\bin\netstandard2.0\publish
 - cmd: dotnet publish .\TinyGivenWhenThenParser\TinyGivenWhenThenParser.csproj
 test_script:
   # Run all the tests
