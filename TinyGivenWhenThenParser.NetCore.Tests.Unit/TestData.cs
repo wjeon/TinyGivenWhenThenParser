@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TinyGivenWhenThenParser.Tests.Unit
+namespace TinyGivenWhenThenParser.NetCore.Tests.Unit
 {
     public class TestData
     {

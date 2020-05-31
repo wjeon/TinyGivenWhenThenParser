@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TinyGivenWhenThenParser.Tests.Unit
+namespace TinyGivenWhenThenParser.NetCore.Tests.Unit
 {
     public class HourOfDay
     {

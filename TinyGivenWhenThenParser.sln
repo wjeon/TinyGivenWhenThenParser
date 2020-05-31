@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TinyGivenWhenThenParser", "TinyGivenWhenThenParser\TinyGivenWhenThenParser.csproj", "{9672B671-083B-4C90-B739-5258E2E14194}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyGivenWhenThenParser.Tests.Unit", "TinyGivenWhenThenParser.Tests.Unit\TinyGivenWhenThenParser.Tests.Unit.csproj", "{49B4BFF4-A694-4300-A8E1-05FB5E4C4F52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TinyGivenWhenThenParser.NetCore.Tests.Unit", "TinyGivenWhenThenParser.NetCore.Tests.Unit\TinyGivenWhenThenParser.NetCore.Tests.Unit.csproj", "{49B4BFF4-A694-4300-A8E1-05FB5E4C4F52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

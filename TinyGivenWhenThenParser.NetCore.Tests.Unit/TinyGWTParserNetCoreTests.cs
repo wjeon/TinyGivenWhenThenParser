@@ -8,10 +8,10 @@ using TinyGivenWhenThenParser.Exceptions;
 using TinyGivenWhenThenParser.Extensions;
 using TinyGivenWhenThenParser.Results;
 
-namespace TinyGivenWhenThenParser.Tests.Unit
+namespace TinyGivenWhenThenParser.NetCore.Tests.Unit
 {
     [TestFixture]
-    public class TinyGWTParserTests
+    public class TinyGWTParserNetCoreTests
     {
         [TestCase(@"Given Tom has 2 apples and 3 oranges", true, "Tom,2,3")]
         [TestCase(@"Given Jerry has 1 apple and 1 orange", true, "Jerry,1,1")]
