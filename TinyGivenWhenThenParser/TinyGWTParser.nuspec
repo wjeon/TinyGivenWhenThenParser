@@ -8,7 +8,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Tiny given-when-then parser that parses data from GWT test cases</description>
     <releaseNotes>Initial release.</releaseNotes>
-    <copyright>Copyright 2017</copyright>
+    <copyright>Copyright 2020</copyright>
     <tags>Tiny Given When Then Parser Test</tags>
   </metadata>
   <files>
