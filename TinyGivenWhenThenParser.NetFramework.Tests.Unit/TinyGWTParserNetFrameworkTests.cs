@@ -7,7 +7,7 @@ using TinyGivenWhenThenParser.Exceptions;
 using TinyGivenWhenThenParser.Extensions;
 using TinyGivenWhenThenParser.Results;
 
-namespace TinyGivenWhenThenParser.Tests.Unit
+namespace TinyGivenWhenThenParser.NetFramework.Tests.Unit
 {
     [TestFixture]
     public class TinyGWTParserTests

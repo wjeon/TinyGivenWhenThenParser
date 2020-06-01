@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -7,12 +7,13 @@
     <ProjectGuid>{194908A9-2B2E-4017-89F8-D04C303D7C01}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TinyGivenWhenThenParser.Tests.Unit</RootNamespace>
-    <AssemblyName>TinyGivenWhenThenParser.Tests.Unit</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <RootNamespace>TinyGivenWhenThenParser.NetFramework.Tests.Unit</RootNamespace>
+    <AssemblyName>TinyGivenWhenThenParser.NetFramework.Tests.Unit</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -56,14 +57,14 @@
     <Compile Include="HourOfDay.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestData.cs" />
-    <Compile Include="TinyGWTParserTests.cs" />
+    <Compile Include="TinyGWTParserNetFrameworkTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TinyGivenWhenThenParser\TinyGivenWhenThenParser.csproj">
-      <Project>{3C3E7669-3CA1-4F0C-A677-8ABD8CCA0B26}</Project>
+      <Project>{9672B671-083B-4C90-B739-5258E2E14194}</Project>
       <Name>TinyGivenWhenThenParser</Name>
     </ProjectReference>
   </ItemGroup>
