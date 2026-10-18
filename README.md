@@ -23,7 +23,7 @@ TinyGivenWhenThenParser gives you complete data extraction power (strings, colle
 
 ***NuGet Package***
 
-https://nuget.org
+https://www.nuget.org/packages/TinyGWTParser
 
 ***Automatic 'And' Context Swapping***
 
